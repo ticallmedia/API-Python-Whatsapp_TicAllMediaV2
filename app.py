@@ -34,11 +34,11 @@ class Log(db.Model):
 #Crear tabla si no existe
 with app.app_context():
     db.create_all()
-    
+    """
     prueba1 = Log(telefono_usuario_id = '111111', plataforma = 'whatsapp', mensaje = 'Mensaje prueba 1', estado_usuario = 'Nuevo', etiqueta_campana = 'Vacaciones', agente = 'Ninguno')
-
     db.session.add(prueba1)
     db.session.commit()
+    """
 #_______________________________________________________________________________________
 #Ejecucion del Programa
 @app.route('/')
@@ -159,7 +159,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     #datos META
     headers = {
         "Content-Type": "application/json",
-        "Autorization": "Bearer EAASP0HB8jAsBO37kNBQUbC9RULU4iZCWNdbRukFwEfx0hoZA6tZBLzSz1KhaCTGb4R2YZCJPSnXc5yUGdcEpmKHBEZBYmfbasta9VGHVSV8DV8XSOVv5pdzUH9d2f0KWet6LZBFpelFCWiZB9YvQqCHS73PROXSFZBxSxEoZBk7nnXELtIivx4HEoElO2dyRHZAzVVOabPk93VXPqs5VPWIgvI3w7S7joc11H0U3UZD"
+        "Authorization": "Bearer EAASP0HB8jAsBO37kNBQUbC9RULU4iZCWNdbRukFwEfx0hoZA6tZBLzSz1KhaCTGb4R2YZCJPSnXc5yUGdcEpmKHBEZBYmfbasta9VGHVSV8DV8XSOVv5pdzUH9d2f0KWet6LZBFpelFCWiZB9YvQqCHS73PROXSFZBxSxEoZBk7nnXELtIivx4HEoElO2dyRHZAzVVOabPk93VXPqs5VPWIgvI3w7S7joc11H0U3UZD"
     }
 
     connection = http.client.HTTPSConnection("graph.facebook.com")
