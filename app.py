@@ -80,7 +80,7 @@ def agregar_mensajes_log(datos_json):
 
 TOKEN_CODE = 'TICALLCODE'
 
-@app.route('/webhook', methods= ['GET','POST'])
+@app.route('/webhook', methods = ['GET','POST'])
 
 def webhook():
     if request.method == 'GET':
@@ -104,7 +104,7 @@ def recibir_mensajes(req):
         req = request.get_json()
         entry = req['entry'][0]
         changes = entry['changes'][0]
-        value = changes['value'][0]
+        value = changes['value']
         objeto_mensaje = value['messages']
 
         #identificaion del tipo de dato
