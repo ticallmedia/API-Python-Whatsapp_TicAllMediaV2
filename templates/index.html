@@ -3,8 +3,45 @@
     <head>
         <meta charset="UTF-8">
         <title>TicAll Media</title>
+        <style>
+            table {
+                width: 80%;
+                border-collapse: collapse ;
+                margin: 20px;
+            }
+            th, td{
+                border: 1px solid #ddd;
+                padding: 3px;
+                text-align: left;
+            }
+            th{
+                background-color: #f2f2f2;
+            }
+        </style>
     </head>
     <body>
         <h1>TicAll Media, Log de eventos</h1>
+        <table>
+            <tr>
+                <th>Fecha y Hora</th>
+                <th>Teléfono - Usuario ID</th>
+                <th>Plataforma</th>
+                <th>Mensaje</th>
+                <th>Estado Usuario</th>
+                <th>Etiqueta - Campaña</th>
+                <th>Agente</th>
+            </tr>
+            {% for registro in registros %}
+            <tr>
+                <td>{{ registro.fecha_y_hora }}</td>
+                <td>{{ registro.telefono_usuario_id }}</td>
+                <td>{{ registro.plataforma }}</td>
+                <td>{{ registro.mensaje }}</td>
+                <td>{{ registro.estado_usuario }}</td>
+                <td>{{ registro.etiqueta_campana }}</td>
+                <td>{{ registro.agente }}</td>
+            </tr>            
+            {% endfor %}
+        </table>
     </body>
 </html>
