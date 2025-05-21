@@ -1,6 +1,7 @@
 from flask import Flask, request,json, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+import http.client
 
 #_______________________________________________________________________________________
 """
@@ -34,10 +35,10 @@ class Log(db.Model):
 with app.app_context():
     db.create_all()
     
-    #prueba1 = Log(telefono_usuario_id = '111111', plataforma = 'whatsapp', mensaje = 'Mensaje prueba 1', estado_usuario = 'Nuevo', etiqueta_campana = 'Vacaciones', agente = 'Ninguno')
+    prueba1 = Log(telefono_usuario_id = '111111', plataforma = 'whatsapp', mensaje = 'Mensaje prueba 1', estado_usuario = 'Nuevo', etiqueta_campana = 'Vacaciones', agente = 'Ninguno')
 
-    #db.session.add(prueba1)
-    #db.session.commit()
+    db.session.add(prueba1)
+    db.session.commit()
 #_______________________________________________________________________________________
 #Ejecucion del Programa
 @app.route('/')
@@ -104,7 +105,7 @@ def recibir_mensajes(req):
         entry = req['entry'][0]
         changes = entry['changes'][0]
         value = changes['value'][0]
-        objeto_mensaje = values['messages']
+        objeto_mensaje = value['messages']
 
         #identificaion del tipo de dato
         if objeto_mensaje:
@@ -118,14 +119,62 @@ def recibir_mensajes(req):
 
                 if "text" in messages:
                     mensaje  = messages['text']['body']
-                    telefono = messages['from']
+                    telefono_id = messages['from']
 
-                    agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono, 'plataforma': 'whatsapp', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
+                    enviar_mensaje_whatsapp(telefono_id,mensaje)
+                    agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
 
         return jsonify({'message':'EVENT_RECEIVED'})
     except Exception as e:
         return jsonify({'message':'EVENT_RECEIVED'})
     
+#_______________________________________________________________________________________
+#Enviar mensajes a whatsapp
+def enviar_mensaje_whatsapp(telefono_id,mensaje):
+    mensaje = mensaje.lower()
+
+    if "hola" in mensaje:
+        data = {
+            "messagin_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": telefono_id,
+            "text": {
+                "preview_url": False,
+                "body": "🚀 Hola, ¿Cómo estás? Bienvenido."
+            }
+        }
+    else:
+        data = {
+            "messagin_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": telefono_id,
+            "text": {
+                "preview_url": False,
+                "body": "🚀 Hola, ¿Cómo estás? Bienvenido."
+            }
+        }
+
+    data = json.dumps(data)
+
+    #datos META
+    headers = {
+        "Content-Type": "application/json",
+        "Autorization": "Bearer EAASP0HB8jAsBO37kNBQUbC9RULU4iZCWNdbRukFwEfx0hoZA6tZBLzSz1KhaCTGb4R2YZCJPSnXc5yUGdcEpmKHBEZBYmfbasta9VGHVSV8DV8XSOVv5pdzUH9d2f0KWet6LZBFpelFCWiZB9YvQqCHS73PROXSFZBxSxEoZBk7nnXELtIivx4HEoElO2dyRHZAzVVOabPk93VXPqs5VPWIgvI3w7S7joc11H0U3UZD"
+    }
+
+    connection = http.client.HTTPSConnection("graph.facebook.com")
+
+    try:
+        connection.request("POST","/v22.0/593835203818298/messages",data, headers)
+        response = connection.getresponse()
+        print(response.status, response.reason)
+    
+    except Exception as e:
+        agregar_mensajes_log(json.dumps(e))
+    finally:
+        connection.close()
+
+
 
 #_______________________________________________________________________________________
 
