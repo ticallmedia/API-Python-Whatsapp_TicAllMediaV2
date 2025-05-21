@@ -121,7 +121,7 @@ def recibir_mensajes(req):
                     mensaje  = messages['text']['body']
                     telefono_id = messages['from']
 
-                    enviar_mensaje_whatsapp(telefono_id,mensaje)
+                    #enviar_mensaje_whatsapp(telefono_id,mensaje)
                     agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
 
         return jsonify({'message':'EVENT_RECEIVED'})
