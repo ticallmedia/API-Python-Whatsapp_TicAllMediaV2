@@ -135,9 +135,10 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
 
     if "hola" in mensaje:
         data = {
-            "messagin_product": "whatsapp",
+            "messaging_product": "whatsapp",
             "recipient_type": "individual",
             "to": telefono_id,
+            "type": "text",
             "text": {
                 "preview_url": False,
                 "body": "🚀 Hola, ¿Cómo estás? Bienvenido."
@@ -145,9 +146,10 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
         }
     else:
         data = {
-            "messagin_product": "whatsapp",
+            "messaging_product": "whatsapp",
             "recipient_type": "individual",
             "to": telefono_id,
+            "type": "text",
             "text": {
                 "preview_url": False,
                 "body": "🚀 Hola, ¿Cómo estás? Bienvenido."
