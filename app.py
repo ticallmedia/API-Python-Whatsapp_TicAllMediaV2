@@ -132,6 +132,7 @@ def recibir_mensajes(req):
 #Enviar mensajes a whatsapp
 def enviar_mensaje_whatsapp(telefono_id,mensaje):
     mensaje = mensaje.lower()
+    agente = "Bot"
     body_mensaje = ""
 
     if "hola" in mensaje:
@@ -159,7 +160,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     
-    agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
+    agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': body_mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': agente }))
 
     data = json.dumps(data)
 
