@@ -120,15 +120,21 @@ def exportar_eventos():
             sheet.clear()
             sheet.append_row(["ID", "Fecha y Hora", "Teléfono - Usuario ID", "Plataforma", "Mensaje", "Estado Usuario", "Etiqueta - Campaña", "Agente"])
 
-            #aplicando formato y color al titulo
+            # aplicando formato y color al titulo
             formato = {
                 "backgroundColor": {
-                    "red": 0.0,
-                    "green": 1.0,
-                    "blue": 0.0,
+                    "red": 0.2,  # Un poco de rojo
+                    "green": 0.4, # Un poco de verde
+                    "blue": 0.8, # Azul más pronunciado para un tono medio
                 },
-                "textFormat" : {"bold": True}
-
+                "textFormat": {
+                    "bold": True,
+                    "foregroundColor": {
+                        "red": 1.0,
+                        "green": 1.0,
+                        "blue": 1.0,
+                    }
+                }
             }
             sheet.format("A1:H1", formato)
 
@@ -229,17 +235,20 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     mensaje = mensaje.lower()
     agente = "Bot"
     body_mensaje = ""
+    img_saludo = ""
 
     if "hola" in mensaje:
         body_mensaje = "🚀 Hola, ¿Cómo estás? Bienvenido."
-        data = {
+        img_saludo = "https://res.cloudinary.com/dioy4cydg/image/upload/v1747884690/imagen_index_wjog6p.jpg"
+        
+        data= {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
             "to": telefono_id,
-            "type": "text",
-            "text": {
-                "preview_url": False,
-                "body": body_mensaje
+            "type": "image",
+            "image": {
+                "link": img_saludo,
+                "caption": body_mensaje
             }
         }
     else:
@@ -254,6 +263,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                 "body": body_mensaje
             }
         }
+
     
     agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': body_mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': agente }))
     exportar_eventos()
