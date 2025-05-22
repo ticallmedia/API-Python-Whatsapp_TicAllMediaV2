@@ -79,17 +79,6 @@ def agregar_mensajes_log(datos_json):
     db.session.add(nuevo_registro)
     db.session.commit()
 
-#llamar la fucion de mesajes de ejemplo
-
-def agregar_mensajes_log(datos_json):
-    datos = json.loads(datos_json)
-    texto = datos["mensaje"]
-    numero = datos["telefono"]
-
-    nuevo_registro = Log(texto=texto, telefono=numero)
-    db.session.add(nuevo_registro)
-    db.session.commit()
-
 #_______________________________________________________________________________________
 #API de Google Sheet para exportar información
 def exportar_eventos():
