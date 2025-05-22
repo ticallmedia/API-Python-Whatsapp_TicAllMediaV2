@@ -105,7 +105,8 @@ def exportar_eventos():
         client = gspread.authorize(creds)
 
         # Acceder al Google Sheet
-        sheet = client.open_by_url('https://docs.google.com/spreadsheets/d/15dzMHXaVdssg9mHXiepkFn6ajAhaAlss9HAL6NHM6G0/edit?usp=drive_link').sheet1
+        #sheet = client.open_by_url('https://docs.google.com/spreadsheets/d/15dzMHXaVdssg9mHXiepkFn6ajAhaAlss9HAL6NHM6G0/edit?usp=drive_link').sheet1
+        sheet = client.open_by_url('https://docs.google.com/spreadsheets/d/1juGRsV5fSs_4LFvAiJNQE8TUMVr8c5KAW-pMaEo6Rh4/edit?usp=drive_link').sheet1
         
         #buscar un texto
         titulos = []
@@ -119,23 +120,17 @@ def exportar_eventos():
             sheet.clear()
             sheet.append_row(["ID", "Fecha y Hora", "Teléfono - Usuario ID", "Plataforma", "Mensaje", "Estado Usuario", "Etiqueta - Campaña", "Agente"])
 
-            # Aplicando formato y color al titulo
+            #aplicando formato y color al titulo
             formato = {
                 "backgroundColor": {
-                    "red": 0.2,  # Un poco de rojo
-                    "green": 0.4, # Un poco de verde
-                    "blue": 0.8, # Azul más pronunciado para un tono medio
+                    "red": 0.0,
+                    "green": 1.0,
+                    "blue": 0.0,
                 },
-                "textFormat": {
-                    "bold": True,
-                    "foregroundColor": {
-                        "red": 1.0,
-                        "green": 1.0,
-                        "blue": 1.0,
-                    }
-                }
+                "textFormat" : {"bold": True}
+
             }
-            sheet.format("A1:D1", formato)
+            sheet.format("A1:H1", formato)
 
         # Asegúrate de que la lista no esté vacía
         if eventos:
