@@ -158,6 +158,8 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                 "body": body_mensaje
             }
         }
+    
+    agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
 
     data = json.dumps(data)
 
