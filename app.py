@@ -3,6 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import http.client
 
+import os
+from oauth2client.service_account import ServiceAccountCredentials
+import gspread
+from dotenv import load_dotenv
+load_dotenv()
+
 #_______________________________________________________________________________________
 """
 Descripción: Primer Bot de Whatsapp para la empresa TicAll Media, 
@@ -74,7 +80,111 @@ def agregar_mensajes_log(datos_json):
     db.session.commit()
 
 #llamar la fucion de mesajes de ejemplo
-#agregar_mensajes_log(json.dump('test1'))
+
+def agregar_mensajes_log(datos_json):
+    datos = json.loads(datos_json)
+    texto = datos["mensaje"]
+    numero = datos["telefono"]
+
+    nuevo_registro = Log(texto=texto, telefono=numero)
+    db.session.add(nuevo_registro)
+    db.session.commit()
+
+#_______________________________________________________________________________________
+#API de Google Sheet para exportar información
+def exportar_eventos():
+    try:
+        # Obtener eventos desde SQLAlchemy
+        eventos = Log.query.all()
+
+        creds_dict = get_google_credentials_from_env()
+
+        # Configurar acceso a Google Sheets
+        scope = [
+            "https://spreadsheets.google.com/feeds",
+            "https://www.googleapis.com/auth/drive",
+        ]   
+
+        # Convertir el diccionario a un objeto tipo archivo usando json.dumps + StringIO
+        from io import StringIO
+        json_creds = json.dumps(creds_dict)
+        
+        # Obtener credenciales desde variables de entorno
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(json_creds), scope)
+
+        # Autenticar con gspread
+        client = gspread.authorize(creds)
+
+        # Acceder al Google Sheet
+        sheet = client.open_by_url('https://docs.google.com/spreadsheets/d/15dzMHXaVdssg9mHXiepkFn6ajAhaAlss9HAL6NHM6G0/edit?usp=drive_link').sheet1
+        
+        #buscar un texto
+        titulos = []
+
+        cells = sheet.findall('ID')
+        for i in cells:
+            titulos.append(i.address)
+            
+        if not titulos:    
+            # Escribir encabezados
+            sheet.clear()
+            sheet.append_row(["ID", "Fecha y Hora", "Teléfono - Usuario ID", "Plataforma", "Mensaje", "Estado Usuario", "Etiqueta - Campaña", "Agente"])
+
+            # Aplicando formato y color al titulo
+            formato = {
+                "backgroundColor": {
+                    "red": 0.2,  # Un poco de rojo
+                    "green": 0.4, # Un poco de verde
+                    "blue": 0.8, # Azul más pronunciado para un tono medio
+                },
+                "textFormat": {
+                    "bold": True,
+                    "foregroundColor": {
+                        "red": 1.0,
+                        "green": 1.0,
+                        "blue": 1.0,
+                    }
+                }
+            }
+            sheet.format("A1:D1", formato)
+
+        # Asegúrate de que la lista no esté vacía
+        if eventos:
+            ultimo_evento = eventos[-1]
+            sheet.append_row([
+                ultimo_evento.id,
+                ultimo_evento.fecha_y_hora.strftime('%Y-%m-%d %H:%M:%S'),
+                ultimo_evento.telefono_usuario_id,
+                ultimo_evento.plataforma,
+                ultimo_evento.mensaje,
+                ultimo_evento.estado_usuario,
+                ultimo_evento.etiqueta_campana,
+                ultimo_evento.agente
+            ])
+
+
+        return jsonify({'message': 'Eventos exportados exitosamente a Google Sheets'}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+#credenciales google en variables de entorno
+def get_google_credentials_from_env():
+    creds_dict = {
+        "type": os.environ["GOOGLE_TYPE"],
+        "project_id": os.environ["GOOGLE_PROJECT_ID"],
+        "private_key_id": os.environ["GOOGLE_PRIVATE_KEY_ID"],
+        "private_key": os.environ["GOOGLE_PRIVATE_KEY"].replace("\\n", "\n"),
+        "client_email": os.environ["GOOGLE_CLIENT_EMAIL"],
+        "client_id": os.environ["GOOGLE_CLIENT_ID"],
+        "auth_uri": os.environ["GOOGLE_AUTH_URI"],
+        "token_uri": os.environ["GOOGLE_TOKEN_URI"],
+        "auth_provider_x509_cert_url": os.environ["GOOGLE_AUTH_PROVIDER_CERT_URL"],
+        "client_x509_cert_url": os.environ["GOOGLE_CLIENT_CERT_URL"]
+    }
+    return creds_dict
+
+
 #_______________________________________________________________________________________
 #Uso del Token y recepcion de mensajes
 
@@ -121,7 +231,7 @@ def recibir_mensajes(req):
                     mensaje  = messages['text']['body']
                     telefono_id = messages['from']
 
-                    agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
+                    agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
                     enviar_mensaje_whatsapp(telefono_id,mensaje)
 
         return jsonify({'message':'EVENT_RECEIVED'})

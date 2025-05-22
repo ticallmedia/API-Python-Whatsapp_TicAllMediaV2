@@ -23,6 +23,7 @@
         <h1>TicAll Media, Log de eventos</h1>
         <table>
             <tr>
+                <th>ID</th>
                 <th>Fecha y Hora</th>
                 <th>Teléfono - Usuario ID</th>
                 <th>Plataforma</th>
@@ -33,6 +34,7 @@
             </tr>
             {% for registro in registros %}
             <tr>
+                <td>{{ registro.id }}</td>
                 <td>{{ registro.fecha_y_hora }}</td>
                 <td>{{ registro.telefono_usuario_id }}</td>
                 <td>{{ registro.plataforma }}</td>
