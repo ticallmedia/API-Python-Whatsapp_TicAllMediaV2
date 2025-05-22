@@ -97,7 +97,7 @@ def verificar_token(req):
     if challenge and token == TOKEN_CODE:
         return challenge
     else:
-        return jsonify({'error': 'Token Invalido'}), 401
+        return jsonify({'error': 'Token Invalido'}),401
 
 def recibir_mensajes(req):
     try:
@@ -121,8 +121,8 @@ def recibir_mensajes(req):
                     mensaje  = messages['text']['body']
                     telefono_id = messages['from']
 
-                    enviar_mensaje_whatsapp(telefono_id,mensaje)
                     agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
+                    enviar_mensaje_whatsapp(telefono_id,mensaje)
 
         return jsonify({'message':'EVENT_RECEIVED'})
     except Exception as e:
@@ -132,8 +132,10 @@ def recibir_mensajes(req):
 #Enviar mensajes a whatsapp
 def enviar_mensaje_whatsapp(telefono_id,mensaje):
     mensaje = mensaje.lower()
+    body_mensaje = ""
 
     if "hola" in mensaje:
+        body_mensaje = "🚀 Hola, ¿Cómo estás? Bienvenido."
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -141,10 +143,11 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             "type": "text",
             "text": {
                 "preview_url": False,
-                "body": "🚀 Hola, ¿Cómo estás? Bienvenido."
+                "body": body_mensaje
             }
         }
     else:
+        body_mensaje = "🚀 Hola, ¿Cómo estás? Bienvenido."
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -152,7 +155,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             "type": "text",
             "text": {
                 "preview_url": False,
-                "body": "🚀 Hola, ¿Cómo estás? Bienvenido."
+                "body": body_mensaje
             }
         }
 
@@ -161,7 +164,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     #datos META
     headers = {
         "Content-Type": "application/json",
-        "Authorization": "Bearer EAASP0HB8jAsBO37kNBQUbC9RULU4iZCWNdbRukFwEfx0hoZA6tZBLzSz1KhaCTGb4R2YZCJPSnXc5yUGdcEpmKHBEZBYmfbasta9VGHVSV8DV8XSOVv5pdzUH9d2f0KWet6LZBFpelFCWiZB9YvQqCHS73PROXSFZBxSxEoZBk7nnXELtIivx4HEoElO2dyRHZAzVVOabPk93VXPqs5VPWIgvI3w7S7joc11H0U3UZD"
+        "Authorization": "Bearer EAASP0HB8jAsBO9kB0xCrOpOMo3HxLzqCdQ9RQjvYM00andK9mgAcyONYtz8onfeDwNMGOVSO9fruwWZC2bnsNzpzuLtikUSUnSZBXiRZC51OSI3SyD60XdNseDg8aHAW304sQDI7VE5YfpZC0tZCOlVZAdiHweEalSZCR9bVm0SZCdfWT7jzEjmrxKX1g5BTcMRoyYbqOcVmgCnZCP2vZApwBdxBQibU1RCvFA3msZD"
     }
 
     connection = http.client.HTTPSConnection("graph.facebook.com")
