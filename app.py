@@ -105,8 +105,8 @@ def exportar_eventos():
         client = gspread.authorize(creds)
 
         # Acceder al Google Sheet
-        #sheet = client.open_by_url('https://docs.google.com/spreadsheets/d/15dzMHXaVdssg9mHXiepkFn6ajAhaAlss9HAL6NHM6G0/edit?usp=drive_link').sheet1
-        sheet = client.open_by_url('https://docs.google.com/spreadsheets/d/1juGRsV5fSs_4LFvAiJNQE8TUMVr8c5KAW-pMaEo6Rh4/edit?usp=drive_link').sheet1
+        sheet = client.open_by_url('https://docs.google.com/spreadsheets/d/15dzMHXaVdssg9mHXiepkFn6ajAhaAlss9HAL6NHM6G0/edit?usp=drive_link').sheet1
+        #sheet = client.open_by_url('https://docs.google.com/spreadsheets/d/1juGRsV5fSs_4LFvAiJNQE8TUMVr8c5KAW-pMaEo6Rh4/edit?usp=drive_link').sheet1
         
         #buscar un texto
         titulos = []
@@ -216,6 +216,7 @@ def recibir_mensajes(req):
                     telefono_id = messages['from']
 
                     agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
+                    exportar_eventos()
                     enviar_mensaje_whatsapp(telefono_id,mensaje)
 
         return jsonify({'message':'EVENT_RECEIVED'})
@@ -255,6 +256,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
         }
     
     agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': body_mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': agente }))
+    exportar_eventos()
 
     data = json.dumps(data)
 
