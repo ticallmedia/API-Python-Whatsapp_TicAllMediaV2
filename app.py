@@ -1,4 +1,4 @@
-from flask import Flask, request,json, jsonify, render_template
+from flask import Flask, request,json, jsonify, render_template, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import http.client
@@ -14,7 +14,11 @@ load_dotenv()
 Descripción: Primer Bot de Whatsapp para la empresa TicAll Media, 
 con descarga en Google Sheet de Conversaciones
 
-
+Caracteristicasz: 
+-Elegir idioma
+-guardar seleccion del idioma en el id o telefono
+-cambiar idioma inicial
+-uso de diccionario para respuesta
 """
 #_______________________________________________________________________________________
 app = Flask(__name__)
@@ -45,6 +49,31 @@ with app.app_context():
     db.session.add(prueba1)
     db.session.commit()
     """
+#_______________________________________________________________________________________
+#Recursos
+
+#URL de mensaje de bienvenida
+IMA_SALUDO_URL= "https://res.cloudinary.com/dioy4cydg/image/upload/v1747884690/imagen_index_wjog6p.jpg"
+
+#Diccionario de seleccioón de idioma
+MESSAGES = {
+    "es":{
+        "welcome_initial": "!Hola¡ Bienvenido. Por favor selecciona tu idioma preferido",
+        "lenguaje_elegido": "!Idioma configurado en Español¡. ",
+        "opcion_invalida": "Opción no válida. Por favor, selecciona. ",
+        "cambio_lenguaje": "Claro, ¿a que Idioma te gustaría cambiar?. ", 
+        "texto_saludo": "🚀 ¡Hola! ¿Cómo estás? Bienvenido a nuestro servicio."
+    },
+    "en": {
+        "welcome_initial": "Hello! Welcome. Please select your preferred language.",
+        "selected_language": "Language set to Spanish.",
+        "invalid_option": "Invalid option. Please select.",
+        "change_language": "Sure, which language would you like to change to?",
+        "greeting_text": "🚀 Hello! How are you? Welcome to our service."
+    }
+}
+
+
 #_______________________________________________________________________________________
 #Ejecucion del Programa
 @app.route('/')
@@ -235,20 +264,66 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     mensaje = mensaje.lower()
     agente = "Bot"
     body_mensaje = ""
-    img_saludo = ""
 
     if "hola" in mensaje:
         body_mensaje = "🚀 Hola, ¿Cómo estás? Bienvenido."
-        img_saludo = "https://res.cloudinary.com/dioy4cydg/image/upload/v1747884690/imagen_index_wjog6p.jpg"
         
         data= {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
             "to": telefono_id,
-            "type": "image",
-            "image": {
-                "link": img_saludo,
-                "caption": body_mensaje
+            "type": "interactive",
+            "interactive": {
+                "type": "button",
+                "body": {
+                    "text": "Confirma tu registro"
+                },
+                "footer": {
+                    "text": "Selecciona una de las opciones:"
+                },
+                "action": {
+                    "buttons":
+                    [   
+                        {
+                            "type": "reply",
+                            "reply": {
+                                "id": "btn_es",
+                                "title": "Español"
+                            }
+                        },{
+                            "type": "reply",
+                            "reply": {
+                                "id": "btn_en",
+                                "title": "English"
+                            }
+
+                        }
+                    ]
+                }
+            }
+        }
+    elif "btn_es" in mensaje:
+        body_mensaje = "🚀 Hola, Español"
+        data = {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": telefono_id,
+            "type": "text",
+            "text": {
+                "preview_url": False,
+                "body": body_mensaje
+            }
+        }
+    elif "btn_en" in mensaje:
+        body_mensaje = "🚀 Hola, English"
+        data = {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": telefono_id,
+            "type": "text",
+            "text": {
+                "preview_url": False,
+                "body": body_mensaje
             }
         }
     else:
@@ -273,7 +348,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     #datos META
     headers = {
         "Content-Type": "application/json",
-        "Authorization": "Bearer EAASP0HB8jAsBO9farBUZAPSCXVxwGGBhCwL1MOpkZA46muI1OtQPXZASlMgcPDMcJj3ZAv451DzGH6H9uKzwJn6uZBXZCXC3gsJ1DBDpMRV57mN02CVtKSuAYZCrnZBbaRZCdCyRvfdg0ySmgw75ej7biRQbHm9FjoAwIdlo71piHjRy99i485puBBXe5Uv0THLEeXxcQbMkRTlpw5cC7VIZACRrebajOZBCjblZAhsZD"
+        "Authorization": "Bearer EAASP0HB8jAsBO2KvVZChf6aYx5SNxcG8KVzJiZAGTIZAZAZAPlY6n0DreCZC6WP2NZAe46m305mx0HFcFKmrlZBZAj9SGZAT10nqMk7rd1LmpoZCBBYQPVv3wcx5q6zTQSrA8Ikvkx6rUcCZBxy39KcJ3jr2ZA3lSUpZAtU6jgjUSD9j1oi7VNAYZCZAJR7JhZAQCvSKRWKpOnu4wxIei8kT31kwkYDZAnFVzcIJRkZB9gYxTQZD"
     }
 
     connection = http.client.HTTPSConnection("graph.facebook.com")
