@@ -274,67 +274,78 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     agente = "Bot"
     body_mensaje = ""
 
-    if "hola" in mensaje:
-        body_mensaje = "🚀 Hola, ¿Cómo estás? Bienvenido."
-        
-        data= {
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
-            "to": telefono_id,
-            "type": "interactive",
-            "interactive": {
-                "type": "button",
-                "body": {
-                    "text": "Confirma tu registro"
-                },
-                "footer": {
-                    "text": "Selecciona una de las opciones:"
-                },
-                "action": {
-                    "buttons":
-                    [   
-                        {
-                            "type": "reply",
-                            "reply": {
-                                "id": "btn_es",
-                                "title": "Español"
-                            }
-                        },{
-                            "type": "reply",
-                            "reply": {
-                                "id": "btn_en",
-                                "title": "English"
-                            }
+    #obteniendo el lenguaje de usuario 
+    lenguaje_usuario= session.get[telefono_id,None]
 
-                        }
-                    ]
+    #Seleecion inicial del idioma
+    if lenguaje_usuario is None:
+        if mensaje == "btn_es":
+            session[telefono_id] = "es"
+            lang = "es"
+
+            body_mensaje = "🚀 Hola, Español"
+            data = {
+                "messaging_product": "whatsapp",
+                "recipient_type": "individual",
+                "to": telefono_id,
+                "type": "text",
+                "text": {
+                    "preview_url": False,
+                    "body": body_mensaje
                 }
             }
-        }
-    elif "btn_es" in mensaje:
-        body_mensaje = "🚀 Hola, Español"
-        data = {
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
-            "to": telefono_id,
-            "type": "text",
-            "text": {
-                "preview_url": False,
-                "body": body_mensaje
+
+        elif mensaje == "btn_en":
+            session[telefono_id] = "en"
+            lang = "en"
+
+            body_mensaje = "🚀 Hola, English"
+            data = {
+                "messaging_product": "whatsapp",
+                "recipient_type": "individual",
+                "to": telefono_id,
+                "type": "text",
+                "text": {
+                    "preview_url": False,
+                    "body": body_mensaje
+                }
             }
-        }
-    elif "btn_en" in mensaje:
-        body_mensaje = "🚀 Hola, English"
-        data = {
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
-            "to": telefono_id,
-            "type": "text",
-            "text": {
-                "preview_url": False,
-                "body": body_mensaje
+        else:
+            body_mensaje = MESSAGES["es"]["welcome_initial"]
+            data= {
+                "messaging_product": "whatsapp",
+                "recipient_type": "individual",
+                "to": telefono_id,
+                "type": "interactive",
+                "interactive": {
+                    "type": "button",
+                    "body": {
+                        "text": "Confirma tu registro"
+                    },
+                    "footer": {
+                        "text": body_mensaje
+                    },
+                    "action": {
+                        "buttons":
+                        [   
+                            {
+                                "type": "reply",
+                                "reply": {
+                                    "id": "btn_es",
+                                    "title": "Español"
+                                }
+                            },{
+                                "type": "reply",
+                                "reply": {
+                                    "id": "btn_en",
+                                    "title": "English"
+                                }
+
+                            }
+                        ]
+                    }
+                }
             }
-        }
     else:
         body_mensaje = "🚀 Hola, ¿Cómo estás? Bienvenido."
         data = {
