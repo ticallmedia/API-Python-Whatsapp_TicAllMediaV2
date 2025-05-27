@@ -244,7 +244,16 @@ def recibir_mensajes(req):
                 tipo = messages['type']
 
                 if tipo == 'interactive':
-                    return 0
+                    tipo_interactivo = messages['interactive']['type']
+
+                    if tipo_interactivo == "button_reply":
+                        mensaje = messages['interactive']['button_reply']['id']
+                        telefono_id = messages['from']
+                        agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
+                        exportar_eventos()
+                        enviar_mensaje_whatsapp(telefono_id,mensaje)
+                
+
 
                 if "text" in messages:
                     mensaje  = messages['text']['body']
