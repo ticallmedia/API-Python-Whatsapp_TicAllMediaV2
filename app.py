@@ -278,7 +278,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     lenguaje_usuario= session.get[telefono_id,None]
 
     #Seleecion inicial del idioma
-    if lenguaje_usuario is None:
+    if lenguaje_usuario:
         if mensaje == "btn_es":
             session[telefono_id] = "es"
             lang = "es"
