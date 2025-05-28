@@ -280,61 +280,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     #Seleecion inicial del idioma
 
     if "hola" in mensaje:
-        RESPONSE_MESSAGE = "Selecciona el idioma"#MESSAGES["es"]["welcome_initial"]
-        data= {
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
-            "to": telefono_id,
-            "type": "interactive",
-            "interactive": {
-                "type": "button",
-                "body": {
-                    "text": "Confirma tu registro"
-                },
-                "footer": {
-                    "text": RESPONSE_MESSAGE
-                },
-                "action": {
-                    "buttons":
-                    [   
-                        {
-                            "type": "reply",
-                            "reply": {
-                                "id": "1",
-                                "title": "Español"
-                            }
-                        },{
-                            "type": "reply",
-                            "reply": {
-                                "id": "2",
-                                "title": "English"
-                            }
-
-                        }
-                    ]
-                }
-            }
-        }
-    elif mensaje == "1":
-        session[telefono_id] = "es"
-        lang = "es"
-
-        RESPONSE_MESSAGE = "🚀 Hola, Español"
-        data = {
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
-            "to": telefono_id,
-            "type": "text",
-            "text": {
-                "preview_url": False,
-                "body": RESPONSE_MESSAGE
-            }
-        }
-    elif mensaje == "2":
-        session[telefono_id] = "en"
-        lang = "en"
-
-        RESPONSE_MESSAGE = "🚀 Hola, English"
+        RESPONSE_MESSAGE = "🚀 Hola, ¿Cómo estás? Bienvenido 1."
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -346,7 +292,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     else:
-        RESPONSE_MESSAGE = "🚀 Hola, ¿Cómo estás? Bienvenido."
+        RESPONSE_MESSAGE = "🚀 Hola, ¿Cómo estás? Bienvenido 2."
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
