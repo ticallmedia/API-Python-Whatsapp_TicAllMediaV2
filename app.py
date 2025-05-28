@@ -59,14 +59,14 @@ IMA_SALUDO_URL= "https://res.cloudinary.com/dioy4cydg/image/upload/v1747884690/i
 MESSAGES = {
     "es":{
         "welcome_initial": "👋😊!Hola¡ Bienvenido. Por favor selecciona tu idioma preferido",
-        "lenguaje_elegido": "!Idioma configurado en Español¡. ",
-        "opcion_invalida": "Opción no válida. Por favor, selecciona. ",
-        "cambio_lenguaje": "Claro, ¿a que Idioma te gustaría cambiar?. ", 
-        "texto_saludo": "🚀 ¡Hola! ¿Cómo estás? Bienvenido a nuestro servicio."
+        "selected_language": "👌!Idioma configurado en Español¡. ",
+        "invalid_option": "Opción no válida. Por favor, selecciona. ",
+        "change_language": "Claro, ¿a que Idioma te gustaría cambiar?. ", 
+        "greeting_text": "🚀 ¡Hola! ¿Cómo estás? Bienvenido a nuestro servicio."
     },
     "en": {
         "welcome_initial": "👋😊Hello! Welcome. Please select your preferred language.",
-        "selected_language": "Language set to English.",
+        "selected_language": "👌Language set to English.",
         "invalid_option": "Invalid option. Please select.",
         "change_language": "Sure, which language would you like to change to?",
         "greeting_text": "🚀 Hello! How are you? Welcome to our service."
@@ -275,7 +275,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     MESSAGE_RESPONSE = ""
 
     if "hola" in mensaje:
-        MESSAGE_RESPONSE = MESSAGES["es"]["welcome_initial"] + "\n" + MESSAGES["en"]["welcome_initial"]
+        MESSAGE_RESPONSE = MESSAGES["es"]["welcome_initial"] + "\n\n" + MESSAGES["en"]["welcome_initial"] + "\n\n"
         
         data= {
             "messaging_product": "whatsapp",
@@ -312,7 +312,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     elif "btn_es" in mensaje:
-        MESSAGE_RESPONSE = MESSAGES["es"]["lenguaje_elegido"] #"🚀 Hola, Español"
+        MESSAGE_RESPONSE = MESSAGES["es"]["selected_language"] #"🚀 Hola, Español"
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -336,15 +336,40 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     else:
-        MESSAGE_RESPONSE = "🚀 Hola, ¿Cómo estás? Bienvenido."
-        data = {
+        MESSAGE_RESPONSE = MESSAGES["es"]["welcome_initial"] + "\n\n" + MESSAGES["en"]["welcome_initial"] + "\n\n"
+        
+        data= {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
             "to": telefono_id,
-            "type": "text",
-            "text": {
-                "preview_url": False,
-                "body": MESSAGE_RESPONSE
+            "type": "interactive",
+            "interactive": {
+                "type": "button",
+                "body": {
+                    "text": MESSAGE_RESPONSE
+                },
+                "footer": {
+                    "text": "Selecciona una de las opciones:"
+                },
+                "action": {
+                    "buttons":
+                    [   
+                        {
+                            "type": "reply",
+                            "reply": {
+                                "id": "btn_es",
+                                "title": "Español"
+                            }
+                        },{
+                            "type": "reply",
+                            "reply": {
+                                "id": "btn_en",
+                                "title": "English"
+                            }
+
+                        }
+                    ]
+                }
             }
         }
 
