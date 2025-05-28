@@ -62,14 +62,16 @@ MESSAGES = {
         "selected_language": "👌!Idioma configurado en Español¡. ",
         "invalid_option": "Opción no válida. Por favor, selecciona. ",
         "change_language": "Claro, ¿a que Idioma te gustaría cambiar?. ", 
-        "greeting_text": "🚀 ¡Hola! ¿Cómo estás? Bienvenido a nuestro servicio."
+        "greeting_text": "🚀 ¡Hola! ¿Cómo estás? Bienvenido a nuestro servicio.",
+        "advice": "🧐¿Buscas asesoría sobre algún servicio especial? "
     },
     "en": {
         "welcome_initial": "👋😊Hello! Welcome. Please select your preferred language.",
         "selected_language": "👌Language set to English.",
         "invalid_option": "Invalid option. Please select.",
         "change_language": "Sure, which language would you like to change to?",
-        "greeting_text": "🚀 Hello! How are you? Welcome to our service."
+        "greeting_text": "🚀 Hello! How are you? Welcome to our service.",
+        "advice": "🧐You are looking for advice on a special service? "
     }
 }
 
@@ -273,6 +275,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     mensaje = mensaje.lower()
     agente = "Bot"
     MESSAGE_RESPONSE = ""
+    language = ""
 
     if "hola" in mensaje:
         MESSAGE_RESPONSE = MESSAGES["es"]["welcome_initial"] + "\n\n" + MESSAGES["en"]["welcome_initial"] + "\n\n"
@@ -306,13 +309,21 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                                 "title": "English"
                             }
 
+                        },{
+                            "type": "reply",
+                            "reply": {
+                                "id": "btn_asesoria",
+                                "title": MESSAGES["es"]["advice"]  + "\n\n" + MESSAGES["en"]["advice"]
+                            }
+
                         }
                     ]
                 }
             }
         }
     elif "btn_es" in mensaje:
-        MESSAGE_RESPONSE = MESSAGES["es"]["selected_language"] #"🚀 Hola, Español"
+        language = "es"
+        MESSAGE_RESPONSE = MESSAGES[language]["selected_language"] #"🚀 Hola, Español"
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -324,7 +335,21 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     elif "btn_en" in mensaje:
-        MESSAGE_RESPONSE =  MESSAGES["en"]["selected_language"]#"🚀 Hola, English"
+        language = "en"
+        MESSAGE_RESPONSE =  MESSAGES[language]["selected_language"]#"🚀 Hola, English"
+        data = {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": telefono_id,
+            "type": "text",
+            "text": {
+                "preview_url": False,
+                "body": MESSAGE_RESPONSE
+            }
+        }
+    elif "btn_asesoria" in mensaje:
+        language = "es"
+        MESSAGE_RESPONSE = "prueba asesoria"
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -365,6 +390,13 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                             "reply": {
                                 "id": "btn_en",
                                 "title": "English"
+                            }
+
+                        },{
+                            "type": "reply",
+                            "reply": {
+                                "id": "btn_asesoria",
+                                "title": MESSAGES["es"]["advice"]  + "\n\n" + MESSAGES["en"]["advice"]
                             }
 
                         }
