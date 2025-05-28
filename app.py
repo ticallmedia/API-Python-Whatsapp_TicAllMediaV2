@@ -75,6 +75,9 @@ MESSAGES = {
     }
 }
 
+catalogo = False
+agente = "Bot"
+language = ""
 
 #_______________________________________________________________________________________
 #Ejecucion del Programa
@@ -273,10 +276,8 @@ def recibir_mensajes(req):
 #Enviar mensajes a whatsapp
 def enviar_mensaje_whatsapp(telefono_id,mensaje):
     mensaje = mensaje.lower()
-    agente = "Bot"
     MESSAGE_RESPONSE = ""
-    language = ""
-    catalogo = False
+    
 
     if "hola" in mensaje:
         MESSAGE_RESPONSE = MESSAGES["es"]["welcome_initial"] + "\n\n" + MESSAGES["en"]["welcome_initial"] + "\n\n"
@@ -356,14 +357,14 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
             "to": telefono_id,
-            "type": "text",
-            "text": {
+            "type": "image",
+            "image": {
                 "link": IMA_SALUDO_URL,
                 "caption": MESSAGE_RESPONSE
             }
         }
     elif catalogo:
-        
+        catalogo = False
         MESSAGE_RESPONSE = "Entre listo para la lista" 
         data = {
             "messaging_product": "whatsapp",
