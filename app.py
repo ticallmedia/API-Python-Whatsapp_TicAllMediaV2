@@ -62,7 +62,7 @@ MESSAGES = {
         "selected_language": "👌!Idioma configurado en Español¡. ",
         "invalid_option": "Opción no válida. Por favor, selecciona. ",
         "change_language": "Claro, ¿a que Idioma te gustaría cambiar?. ", 
-        "greeting_text": "🚀 ¡Hola! ¿Cómo estás? Bienvenido a nuestro servicio.",
+        "greeting_text": "¡Saludos! 🤖 ¿Intrigado por una estrategia de marketing más inteligente?\n\n En TicAll Media, tenemos ideas que podrían sorprenderte.\n\n¿Te animas a explorar?",
         "advice": "🧐¿Buscas asesoría sobre algún servicio especial? "
     },
     "en": {
@@ -348,16 +348,16 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     elif "btn_asesoria" in mensaje:
-        language = "es"
-        MESSAGE_RESPONSE = MESSAGES[language]["advice"] 
+        #language = "es"
+        MESSAGE_RESPONSE = MESSAGES[language]["greeting_text"] 
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
             "to": telefono_id,
             "type": "text",
             "text": {
-                "preview_url": False,
-                "body": MESSAGE_RESPONSE
+                "link": IMA_SALUDO_URL,
+                "caption": MESSAGE_RESPONSE
             }
         }
     else:
