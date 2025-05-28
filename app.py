@@ -313,7 +313,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                             "type": "reply",
                             "reply": {
                                 "id": "btn_asesoria",
-                                "title": MESSAGES["es"]["advice"]  + "\n\n" + MESSAGES["en"]["advice"]
+                                "title": "Asesoria"
                             }
 
                         }
@@ -396,7 +396,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                             "type": "reply",
                             "reply": {
                                 "id": "btn_asesoria",
-                                "title": MESSAGES["es"]["advice"]  + "\n\n" + MESSAGES["en"]["advice"]
+                                "title": "Asesoria"
                             }
 
                         }
