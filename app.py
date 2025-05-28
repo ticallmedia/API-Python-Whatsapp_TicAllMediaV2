@@ -247,21 +247,21 @@ def recibir_mensajes(req):
                     tipo_interactivo = messages['interactive']['type']
 
                     if tipo_interactivo == "button_reply":
-                        mensaje = messages['interactive']['button_reply']['id']
+                        USER_MESSAGE = messages['interactive']['button_reply']['id']
                         telefono_id = messages['from']
-                        agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
+                        agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': USER_MESSAGE, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
                         exportar_eventos()
-                        enviar_mensaje_whatsapp(telefono_id,mensaje)
+                        enviar_mensaje_whatsapp(telefono_id,USER_MESSAGE)
                 
 
 
                 if "text" in messages:
-                    mensaje  = messages['text']['body']
+                    USER_MESSAGE  = messages['text']['body']
                     telefono_id = messages['from']
 
-                    agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
+                    agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': USER_MESSAGE, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
                     exportar_eventos()
-                    enviar_mensaje_whatsapp(telefono_id,mensaje)
+                    enviar_mensaje_whatsapp(telefono_id,USER_MESSAGE)
 
         return jsonify({'message':'EVENT_RECEIVED'})
     except Exception as e:
@@ -272,82 +272,54 @@ def recibir_mensajes(req):
 def enviar_mensaje_whatsapp(telefono_id,mensaje):
     mensaje = mensaje.lower()
     agente = "Bot"
-    body_mensaje = ""
+    RESPONSE_MESSAGE = ""
 
     #obteniendo el lenguaje de usuario 
     lenguaje_usuario= session.get[telefono_id,None]
 
     #Seleecion inicial del idioma
-    if lenguaje_usuario:
-        if mensaje == "btn_es":
-            session[telefono_id] = "es"
-            lang = "es"
 
-            body_mensaje = "🚀 Hola, Español"
-            data = {
-                "messaging_product": "whatsapp",
-                "recipient_type": "individual",
-                "to": telefono_id,
-                "type": "text",
-                "text": {
-                    "preview_url": False,
-                    "body": body_mensaje
-                }
-            }
-
-        elif mensaje == "btn_en":
-            session[telefono_id] = "en"
-            lang = "en"
-
-            body_mensaje = "🚀 Hola, English"
-            data = {
-                "messaging_product": "whatsapp",
-                "recipient_type": "individual",
-                "to": telefono_id,
-                "type": "text",
-                "text": {
-                    "preview_url": False,
-                    "body": body_mensaje
-                }
-            }
-        else:
-            body_mensaje = MESSAGES["es"]["welcome_initial"]
-            data= {
-                "messaging_product": "whatsapp",
-                "recipient_type": "individual",
-                "to": telefono_id,
-                "type": "interactive",
-                "interactive": {
-                    "type": "button",
-                    "body": {
-                        "text": "Confirma tu registro"
-                    },
-                    "footer": {
-                        "text": body_mensaje
-                    },
-                    "action": {
-                        "buttons":
-                        [   
-                            {
-                                "type": "reply",
-                                "reply": {
-                                    "id": "btn_es",
-                                    "title": "Español"
-                                }
-                            },{
-                                "type": "reply",
-                                "reply": {
-                                    "id": "btn_en",
-                                    "title": "English"
-                                }
-
+    if "hola" in mensaje:
+        RESPONSE_MESSAGE = "Selecciona el idioma"#MESSAGES["es"]["welcome_initial"]
+        data= {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": telefono_id,
+            "type": "interactive",
+            "interactive": {
+                "type": "button",
+                "body": {
+                    "text": "Confirma tu registro"
+                },
+                "footer": {
+                    "text": RESPONSE_MESSAGE
+                },
+                "action": {
+                    "buttons":
+                    [   
+                        {
+                            "type": "reply",
+                            "reply": {
+                                "id": "1",
+                                "title": "Español"
                             }
-                        ]
-                    }
+                        },{
+                            "type": "reply",
+                            "reply": {
+                                "id": "2",
+                                "title": "English"
+                            }
+
+                        }
+                    ]
                 }
             }
-    else:
-        body_mensaje = "🚀 Hola, ¿Cómo estás? Bienvenido."
+        }
+    elif mensaje == "1":
+        session[telefono_id] = "es"
+        lang = "es"
+
+        RESPONSE_MESSAGE = "🚀 Hola, Español"
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -355,12 +327,39 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             "type": "text",
             "text": {
                 "preview_url": False,
-                "body": body_mensaje
+                "body": RESPONSE_MESSAGE
+            }
+        }
+    elif mensaje == "2":
+        session[telefono_id] = "en"
+        lang = "en"
+
+        RESPONSE_MESSAGE = "🚀 Hola, English"
+        data = {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": telefono_id,
+            "type": "text",
+            "text": {
+                "preview_url": False,
+                "body": RESPONSE_MESSAGE
+            }
+        }
+    else:
+        RESPONSE_MESSAGE = "🚀 Hola, ¿Cómo estás? Bienvenido."
+        data = {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": telefono_id,
+            "type": "text",
+            "text": {
+                "preview_url": False,
+                "body": RESPONSE_MESSAGE
             }
         }
 
     
-    agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': body_mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': agente }))
+    agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': RESPONSE_MESSAGE, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': agente }))
     exportar_eventos()
 
     data = json.dumps(data)
@@ -368,7 +367,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     #datos META
     headers = {
         "Content-Type": "application/json",
-        "Authorization": "Bearer EAASP0HB8jAsBO2KvVZChf6aYx5SNxcG8KVzJiZAGTIZAZAZAPlY6n0DreCZC6WP2NZAe46m305mx0HFcFKmrlZBZAj9SGZAT10nqMk7rd1LmpoZCBBYQPVv3wcx5q6zTQSrA8Ikvkx6rUcCZBxy39KcJ3jr2ZA3lSUpZAtU6jgjUSD9j1oi7VNAYZCZAJR7JhZAQCvSKRWKpOnu4wxIei8kT31kwkYDZAnFVzcIJRkZB9gYxTQZD"
+        "Authorization": "Bearer EAASP0HB8jAsBO80t2nyYvz9U6eWKNiCA7AynLnBYKnKRt315x652iY0QICopZBrJ7gnbhly1PiFbgZCUY4TS0EX4EQ32qyT18YlSO0ZCj2bYwg7kPtiCK83GKsP29p8psqKdguLZB835F8YEd4ZCHT9YAoC5N1FUglB7AA4k4kl5FrUqM7sIWebZBTdioP3dKiUcqDUu7vhSqJh215ZB0hErbUVmeXh01zR6h4T9QZDZD"
     }
 
     connection = http.client.HTTPSConnection("graph.facebook.com")
