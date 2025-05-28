@@ -363,19 +363,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                 "caption": MESSAGE_RESPONSE
             }
         }
-    elif catalogo:
-        catalogo = False
-        MESSAGE_RESPONSE = "Entre listo para la lista" 
-        data = {
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
-            "to": telefono_id,
-            "type": "text",
-            "text": {
-                "preview_url": False,
-                "caption": MESSAGE_RESPONSE
-            }
-        }   
+        
     else:
         MESSAGE_RESPONSE = MESSAGES["es"]["welcome_initial"] + "\n\n" + MESSAGES["en"]["welcome_initial"] + "\n\n"
         
