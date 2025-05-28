@@ -312,7 +312,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                         },{
                             "type": "reply",
                             "reply": {
-                                "id": "btn_as",
+                                "id": "btn_asesoria",
                                 "title": "Asesoria"
                             }
 
@@ -322,8 +322,8 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     elif "btn_es" in mensaje:
-        #language = "es"
-        MESSAGE_RESPONSE = MESSAGES["es"]["selected_language"] #"🚀 Hola, Español"
+        language = "es"
+        MESSAGE_RESPONSE = MESSAGES[language]["selected_language"] #"🚀 Hola, Español"
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -335,8 +335,8 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     elif "btn_en" in mensaje:
-        #language = "en"
-        MESSAGE_RESPONSE =  MESSAGES["en"]["selected_language"]#"🚀 Hola, English"
+        language = "en"
+        MESSAGE_RESPONSE =  MESSAGES[language]["selected_language"]#"🚀 Hola, English"
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -347,9 +347,9 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                 "body": MESSAGE_RESPONSE
             }
         }
-    elif "btn_as" in mensaje:
-        #language = "es"
-        MESSAGE_RESPONSE = MESSAGES["es"]["advice"] 
+    elif "btn_asesoria" in mensaje:
+        language = "es"
+        MESSAGE_RESPONSE = MESSAGES[language]["advice"] 
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -395,7 +395,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                         },{
                             "type": "reply",
                             "reply": {
-                                "id": "btn_as",
+                                "id": "btn_asesoria",
                                 "title": "Asesoria"
                             }
 
@@ -414,7 +414,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     #datos META
     headers = {
         "Content-Type": "application/json",
-        "Authorization": "Bearer EAASP0HB8jAsBOzy68CjWMIrXJKfuF2b27ZBotZAFZCMtEyrJm6BtDuX471AnZBRcZCy4mGdkS5OC04sBdKicdPy7avoTjTpO4VwUOGu6OoL4w5olw4UdZCYcsHrtiRrFbKOEwICFZCVSbPOOLG79NGu2xQfvTZCqv6gimXZAF4lUwaYDjBYVUSp1Ki6nNXLmhvZC35lnG94bRjuQZCjlPgVjFv1sZBTD3J3C1328RvIZD"
+        "Authorization": "Bearer EAASP0HB8jAsBOymZAoWysh3biLLOVLS3dYoAYZA9jl2xKZBpZAm3W2TxEdKRMTsZB3hEVbze2OJP4HKPe5pujCqXUUo7ZBAk0eLgVzGHyKScY33aqhoAtPouk9oPC1XigqXM3bq2KLWSMIdRklJOGYr5SYzalpn0EsA1GlQg67d4qBInlt8oTigoHgh43KLXt4LgZDZD"
     }
 
     connection = http.client.HTTPSConnection("graph.facebook.com")
