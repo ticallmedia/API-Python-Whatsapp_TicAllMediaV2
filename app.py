@@ -276,6 +276,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     agente = "Bot"
     MESSAGE_RESPONSE = ""
     language = ""
+    catalogo = False
 
     if "hola" in mensaje:
         MESSAGE_RESPONSE = MESSAGES["es"]["welcome_initial"] + "\n\n" + MESSAGES["en"]["welcome_initial"] + "\n\n"
@@ -349,7 +350,8 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
         }
     elif "btn_asesoria" in mensaje:
         #language = "es"
-        MESSAGE_RESPONSE = MESSAGES[language]["greeting_text"] 
+        catalogo = True
+        MESSAGE_RESPONSE = MESSAGES["es"]["greeting_text"] 
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -360,6 +362,19 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                 "caption": MESSAGE_RESPONSE
             }
         }
+    elif catalogo:
+        
+        MESSAGE_RESPONSE = "Entre listo para la lista" 
+        data = {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": telefono_id,
+            "type": "text",
+            "text": {
+                "preview_url": False,
+                "caption": MESSAGE_RESPONSE
+            }
+        }   
     else:
         MESSAGE_RESPONSE = MESSAGES["es"]["welcome_initial"] + "\n\n" + MESSAGES["en"]["welcome_initial"] + "\n\n"
         
