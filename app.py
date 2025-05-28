@@ -312,7 +312,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                         },{
                             "type": "reply",
                             "reply": {
-                                "id": "btn_asesoria",
+                                "id": "btn_as",
                                 "title": "Asesoria"
                             }
 
@@ -322,8 +322,8 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     elif "btn_es" in mensaje:
-        language = "es"
-        MESSAGE_RESPONSE = MESSAGES[language]["selected_language"] #"🚀 Hola, Español"
+        #language = "es"
+        MESSAGE_RESPONSE = MESSAGES["es"]["selected_language"] #"🚀 Hola, Español"
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -335,8 +335,8 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     elif "btn_en" in mensaje:
-        language = "en"
-        MESSAGE_RESPONSE =  MESSAGES[language]["selected_language"]#"🚀 Hola, English"
+        #language = "en"
+        MESSAGE_RESPONSE =  MESSAGES["en"]["selected_language"]#"🚀 Hola, English"
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -347,9 +347,9 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                 "body": MESSAGE_RESPONSE
             }
         }
-    elif "btn_asesoria" in mensaje:
-        language = "es"
-        MESSAGE_RESPONSE = "prueba asesoria"
+    elif "btn_as" in mensaje:
+        #language = "es"
+        MESSAGE_RESPONSE = MESSAGES["es"]["advice"] 
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -395,7 +395,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                         },{
                             "type": "reply",
                             "reply": {
-                                "id": "btn_asesoria",
+                                "id": "btn_as",
                                 "title": "Asesoria"
                             }
 
