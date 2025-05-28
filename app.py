@@ -58,15 +58,15 @@ IMA_SALUDO_URL= "https://res.cloudinary.com/dioy4cydg/image/upload/v1747884690/i
 #Diccionario de seleccioón de idioma
 MESSAGES = {
     "es":{
-        "welcome_initial": "!Hola¡ Bienvenido. Por favor selecciona tu idioma preferido",
+        "welcome_initial": "👋😊!Hola¡ Bienvenido. Por favor selecciona tu idioma preferido",
         "lenguaje_elegido": "!Idioma configurado en Español¡. ",
         "opcion_invalida": "Opción no válida. Por favor, selecciona. ",
         "cambio_lenguaje": "Claro, ¿a que Idioma te gustaría cambiar?. ", 
         "texto_saludo": "🚀 ¡Hola! ¿Cómo estás? Bienvenido a nuestro servicio."
     },
     "en": {
-        "welcome_initial": "Hello! Welcome. Please select your preferred language.",
-        "selected_language": "Language set to Spanish.",
+        "welcome_initial": "👋😊Hello! Welcome. Please select your preferred language.",
+        "selected_language": "Language set to English.",
         "invalid_option": "Invalid option. Please select.",
         "change_language": "Sure, which language would you like to change to?",
         "greeting_text": "🚀 Hello! How are you? Welcome to our service."
@@ -275,7 +275,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     body_mensaje = ""
 
     if "hola" in mensaje:
-        body_mensaje = "🚀 Hola, ¿Cómo estás? Bienvenido."
+        body_mensaje = MESSAGES["es"]["welcome_initial"] #"🚀 Hola, ¿Cómo estás? Bienvenido."
         
         data= {
             "messaging_product": "whatsapp",
@@ -312,7 +312,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     elif "btn_es" in mensaje:
-        body_mensaje = "🚀 Hola, Español"
+        body_mensaje = MESSAGES["es"]["lenguaje_elegido"] #"🚀 Hola, Español"
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -324,7 +324,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     elif "btn_en" in mensaje:
-        body_mensaje = "🚀 Hola, English"
+        body_mensaje =  MESSAGES["es"]["selected_language"]#"🚀 Hola, English"
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
