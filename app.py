@@ -272,10 +272,10 @@ def recibir_mensajes(req):
 def enviar_mensaje_whatsapp(telefono_id,mensaje):
     mensaje = mensaje.lower()
     agente = "Bot"
-    body_mensaje = ""
+    MESSAGE_RESPONSE = ""
 
     if "hola" in mensaje:
-        body_mensaje = MESSAGES["es"]["welcome_initial"] #"🚀 Hola, ¿Cómo estás? Bienvenido."
+        MESSAGE_RESPONSE = MESSAGES["es"]["welcome_initial"] + "\n" + MESSAGES["en"]["welcome_initial"]
         
         data= {
             "messaging_product": "whatsapp",
@@ -285,7 +285,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             "interactive": {
                 "type": "button",
                 "body": {
-                    "text": "Confirma tu registro"
+                    "text": MESSAGE_RESPONSE
                 },
                 "footer": {
                     "text": "Selecciona una de las opciones:"
@@ -312,7 +312,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     elif "btn_es" in mensaje:
-        body_mensaje = MESSAGES["es"]["lenguaje_elegido"] #"🚀 Hola, Español"
+        MESSAGE_RESPONSE = MESSAGES["es"]["lenguaje_elegido"] #"🚀 Hola, Español"
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -320,11 +320,11 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             "type": "text",
             "text": {
                 "preview_url": False,
-                "body": body_mensaje
+                "body": MESSAGE_RESPONSE
             }
         }
     elif "btn_en" in mensaje:
-        body_mensaje =  MESSAGES["es"]["selected_language"]#"🚀 Hola, English"
+        MESSAGE_RESPONSE =  MESSAGES["en"]["selected_language"]#"🚀 Hola, English"
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -332,11 +332,11 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             "type": "text",
             "text": {
                 "preview_url": False,
-                "body": body_mensaje
+                "body": MESSAGE_RESPONSE
             }
         }
     else:
-        body_mensaje = "🚀 Hola, ¿Cómo estás? Bienvenido."
+        MESSAGE_RESPONSE = "🚀 Hola, ¿Cómo estás? Bienvenido."
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -344,12 +344,12 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             "type": "text",
             "text": {
                 "preview_url": False,
-                "body": body_mensaje
+                "body": MESSAGE_RESPONSE
             }
         }
 
     
-    agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': body_mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': agente }))
+    agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': MESSAGE_RESPONSE, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': agente }))
     exportar_eventos()
 
     data = json.dumps(data)
