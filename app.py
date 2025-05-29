@@ -289,7 +289,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     user_language = get_user_language(telefono_id)
     response_idioma = ""
 
-    if "hi" in mensaje:# or "hola" in mensaje or "start":
+    if "hi" in mensaje or "hola" in mensaje or "start":
         response_idioma = get_message(user_language,"welcome_initial")
         
         MESSAGE_RESPONSE = response_idioma
@@ -303,7 +303,6 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                 "body": MESSAGE_RESPONSE
             }
         }
-
     elif "1" in mensaje:
         set_user_language(telefono_id,"en")
         response_idioma = get_message("en", "selected_language")
@@ -319,7 +318,6 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                 "body": MESSAGE_RESPONSE
             }
         }
-
     elif "2" in mensaje:
         set_user_language(telefono_id,"es")
         response_idioma = get_message("es", "selected_language")
@@ -335,8 +333,22 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                 "body": MESSAGE_RESPONSE
             }
         }
-
     else:
+        response_idioma = get_message("en","lang_prompt")
+    
+        MESSAGE_RESPONSE = response_idioma
+        data = {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": telefono_id,
+            "type": "text",
+            "text": {
+                "preview_url": False,
+                "body": MESSAGE_RESPONSE
+            }
+        }
+
+        """
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -376,6 +388,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                     "body": MESSAGE_RESPONSE
                 }
             }
+        """
 
 
     
