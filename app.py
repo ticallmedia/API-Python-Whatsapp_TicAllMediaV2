@@ -303,7 +303,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     elif mensaje == "1":
-        set_user_language(telefono_id,"en")
+        #set_user_language(telefono_id,"en")
         MESSAGE_RESPONSE = get_message("en", "selected_language")
 
         data = {
@@ -317,7 +317,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     elif mensaje == "2":
-        set_user_language(telefono_id,"es")
+        #set_user_language(telefono_id,"es")
         MESSAGE_RESPONSE = get_message("es", "selected_language")
 
         data = {
