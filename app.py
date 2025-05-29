@@ -327,52 +327,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     
 
     if "hola" in mensaje:
-        MESSAGE_RESPONSE = MESSAGES["es"]["welcome_initial"] + "\n\n" + MESSAGES["en"]["welcome_initial"] + "\n\n"
-        
-        data= {
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
-            "to": telefono_id,
-            "type": "interactive",
-            "interactive": {
-                "type": "button",
-                "body": {
-                    "text": MESSAGE_RESPONSE
-                },
-                "footer": {
-                    "text": "Selecciona una de las opciones:"
-                },
-                "action": {
-                    "buttons":
-                    [   
-                        {
-                            "type": "reply",
-                            "reply": {
-                                "id": "btn_es",
-                                "title": "Español"
-                            }
-                        },{
-                            "type": "reply",
-                            "reply": {
-                                "id": "btn_en",
-                                "title": "English"
-                            }
-
-                        },{
-                            "type": "reply",
-                            "reply": {
-                                "id": "btn_asesoria",
-                                "title": "Asesoria"
-                            }
-
-                        }
-                    ]
-                }
-            }
-        }
-    elif "btn_es" in mensaje:
-        language = "es"
-        MESSAGE_RESPONSE = MESSAGES[language]["selected_language"] #"🚀 Hola, Español"
+        MESSAGE_RESPONSE = "🚀 Hola, ¿Cómo estás? Bienvenido."
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -381,78 +336,19 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             "text": {
                 "preview_url": False,
                 "body": MESSAGE_RESPONSE
-            }
-        }
-    elif "btn_en" in mensaje:
-        language = "en"
-        MESSAGE_RESPONSE =  MESSAGES[language]["selected_language"]#"🚀 Hola, English"
-        data = {
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
-            "to": telefono_id,
-            "type": "text",
-            "text": {
-                "preview_url": False,
-                "body": MESSAGE_RESPONSE
-            }
-        }
-    elif "btn_asesoria" in mensaje:
-        #language = "es"
-        catalogo = True
-        MESSAGE_RESPONSE = MESSAGES["es"]["greeting_text"] 
-        data = {
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
-            "to": telefono_id,
-            "type": "image",
-            "image": {
-                "link": IMA_SALUDO_URL,
-                "caption": MESSAGE_RESPONSE
             }
         }
 
     else:
-        MESSAGE_RESPONSE = MESSAGES["es"]["welcome_initial"] + "\n\n" + MESSAGES["en"]["welcome_initial"] + "\n\n"
-        
-        data= {
+        MESSAGE_RESPONSE = "🚀 Hola, ¿Cómo estás? Bienvenido."
+        data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
             "to": telefono_id,
-            "type": "interactive",
-            "interactive": {
-                "type": "button",
-                "body": {
-                    "text": MESSAGE_RESPONSE
-                },
-                "footer": {
-                    "text": "Selecciona una de las opciones:"
-                },
-                "action": {
-                    "buttons":
-                    [   
-                        {
-                            "type": "reply",
-                            "reply": {
-                                "id": "btn_es",
-                                "title": "Español"
-                            }
-                        },{
-                            "type": "reply",
-                            "reply": {
-                                "id": "btn_en",
-                                "title": "English"
-                            }
-
-                        },{
-                            "type": "reply",
-                            "reply": {
-                                "id": "btn_asesoria",
-                                "title": "Asesoria"
-                            }
-
-                        }
-                    ]
-                }
+            "type": "text",
+            "text": {
+                "preview_url": False,
+                "body": MESSAGE_RESPONSE
             }
         }
 
