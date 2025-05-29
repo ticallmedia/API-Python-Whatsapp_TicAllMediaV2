@@ -289,7 +289,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     user_language = get_user_language(telefono_id)
     response_idioma = ""
 
-    if "hi" in mensaje or "hola" in mensaje or "start":
+    if "hi" in mensaje:# or "hola" in mensaje or "start":
         response_idioma = get_message(user_language,"welcome_initial")
         
         MESSAGE_RESPONSE = response_idioma
@@ -347,7 +347,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                 "body": "🚀 Hola, visita mi web https://ticallmedia.com/.com para más información.\n \n📌Por favor, ingresa un número #️⃣ para recibir información.\n \n1️⃣. Información de los Servicios. 💼\n2️⃣. Ubicación del local. 📍\n3️⃣. Enviar catalogo en PDF. 📄\n4️⃣. Audio explicando a mayor detalle. 🎧\n5️⃣. Video de Introducción. ⏯️\n6️⃣. Hablar con un Agente. 🙋‍♂️\n7️⃣. Horario de Atención. 🕜 \n0️⃣. Regresar al Menú. 🕜"
             }
         }
-        """
+        
         if user_language:
             response_idioma = get_message(user_language,"default_response")
 
@@ -376,7 +376,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                     "body": MESSAGE_RESPONSE
                 }
             }
-        """
+
 
     
     agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': MESSAGE_RESPONSE, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': agente }))
