@@ -1,7 +1,7 @@
 MESSAGES = {
     "es":{
         "welcome_initial": "👋😊!Hola¡ Bienvenido. Por favor selecciona tu idioma preferido",
-        "lang_prompt": "Please choose your language:\n1. English\n2. Español",
+        "lang_prompt": "Por favor, elige tu idioma:\n1. English\n2. Español",
         "selected_language": "👌!Idioma configurado en Español¡. ",
         "invalid_option": "Opción no válida. Por favor, selecciona. ",
         "default_response": "¡Gracias por tu mensaje en español! ¿En qué puedo ayudarte?",
@@ -11,7 +11,7 @@ MESSAGES = {
     },
     "en": {
         "welcome_initial": "👋😊Hello! Welcome. Please select your preferred language.",
-        "lang_prompt": "Por favor, elige tu idioma:\n1. English\n2. Español",
+        "lang_prompt": "Please choose your language:\n1. English\n2. Español",
         "selected_language": "👌Language set to English.",
         "invalid_option": "Invalid option. Please select.",
         "default_response": "Thank you for your message in English! How can I help you?",

@@ -256,26 +256,21 @@ def recibir_mensajes(req):
                 tipo = messages['type']
 
                 if tipo == 'interactive':
+                    return 0
+                    """
                     tipo_interactivo = messages['interactive']['type']
 
                     if tipo_interactivo == "button_reply":
                         mensaje = messages['interactive']['button_reply']['id']
                         telefono_id = messages['from']
 
-                        
-
-
                         agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
                         exportar_eventos()
                         enviar_mensaje_whatsapp(telefono_id,mensaje)
-                
-
-
+                    """
                 if "text" in messages:
                     mensaje  = messages['text']['body']
                     telefono_id = messages['from']
-
-                    
 
                     agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
                     exportar_eventos()
@@ -294,8 +289,6 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     user_language = get_user_language(telefono_id)
     response_idioma = ""
 
-    mensaje = mensaje.lower()
-
     if "hi" in mensaje or "hola" in mensaje or "start":
         response_idioma = get_message(user_language,"welcome_initial")
         
@@ -310,7 +303,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                 "body": MESSAGE_RESPONSE
             }
         }
-        
+
     elif "1" in mensaje:
         set_user_language(telefono_id,"en")
         response_idioma = get_message("en", "selected_language")
