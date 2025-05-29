@@ -262,24 +262,7 @@ def recibir_mensajes(req):
                         mensaje = messages['interactive']['button_reply']['id']
                         telefono_id = messages['from']
 
-                        user_language = get_user_language(telefono_id)
-                        response_idioma = ""
-
-                        mensaje = mensaje.lower()
-
-                        if "hi" in mensaje or "hola" in mensaje or "start":
-                            response_idioma = get_message(user_language,"welcome_initial")
-                        elif "1" in mensaje:
-                            set_user_language(telefono_id,"en")
-                            response_idioma = get_message("en", "selected_language")
-                        elif "2" in mensaje:
-                            set_user_language(telefono_id,"es")
-                            response_idioma = get_message("es", "selected_language")
-                        else:
-                            if user_language:
-                                response_idioma = get_message(user_language,"default_response")
-                            else:
-                                response_idioma = get_message("en","lang_prompt")
+                        
 
 
                         agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
@@ -292,24 +275,7 @@ def recibir_mensajes(req):
                     mensaje  = messages['text']['body']
                     telefono_id = messages['from']
 
-                    user_language = get_user_language(telefono_id)
-                    response_idioma = ""
-
-                    mensaje = mensaje.lower()
-
-                    if "hi" in mensaje or "hola" in mensaje or "start":
-                        response_idioma = get_message(user_language,"welcome_initial")
-                    elif "1" in mensaje:
-                        set_user_language(telefono_id,"en")
-                        response_idioma = get_message("en", "selected_language")
-                    elif "2" in mensaje:
-                        set_user_language(telefono_id,"es")
-                        response_idioma = get_message("es", "selected_language")
-                    else:
-                        if user_language:
-                            response_idioma = get_message(user_language,"default_response")
-                        else:
-                            response_idioma = get_message("en","lang_prompt")
+                    
 
                     agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
                     exportar_eventos()
@@ -325,9 +291,47 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     mensaje = mensaje.lower()
     MESSAGE_RESPONSE = ""
     
+    user_language = get_user_language(telefono_id)
+    response_idioma = ""
 
-    if "hola" in mensaje:
-        MESSAGE_RESPONSE = "🚀 Hola, ¿Cómo estás? Bienvenido."
+    mensaje = mensaje.lower()
+
+    if "hi" in mensaje or "hola" in mensaje or "start":
+        response_idioma = get_message(user_language,"welcome_initial")
+        
+        MESSAGE_RESPONSE = response_idioma
+        data = {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": telefono_id,
+            "type": "text",
+            "text": {
+                "preview_url": False,
+                "body": MESSAGE_RESPONSE
+            }
+        }
+        
+    elif "1" in mensaje:
+        set_user_language(telefono_id,"en")
+        response_idioma = get_message("en", "selected_language")
+
+        MESSAGE_RESPONSE = response_idioma
+        data = {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": telefono_id,
+            "type": "text",
+            "text": {
+                "preview_url": False,
+                "body": MESSAGE_RESPONSE
+            }
+        }
+
+    elif "2" in mensaje:
+        set_user_language(telefono_id,"es")
+        response_idioma = get_message("es", "selected_language")
+
+        MESSAGE_RESPONSE = response_idioma
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -340,17 +344,35 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
         }
 
     else:
-        MESSAGE_RESPONSE = "🚀 Hola, ¿Cómo estás? Bienvenido."
-        data = {
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
-            "to": telefono_id,
-            "type": "text",
-            "text": {
-                "preview_url": False,
-                "body": MESSAGE_RESPONSE
+        if user_language:
+            response_idioma = get_message(user_language,"default_response")
+
+            MESSAGE_RESPONSE = response_idioma
+            data = {
+                "messaging_product": "whatsapp",
+                "recipient_type": "individual",
+                "to": telefono_id,
+                "type": "text",
+                "text": {
+                    "preview_url": False,
+                    "body": MESSAGE_RESPONSE
+                }
             }
-        }
+        else:
+            response_idioma = get_message("en","lang_prompt")
+        
+            MESSAGE_RESPONSE = response_idioma
+            data = {
+                "messaging_product": "whatsapp",
+                "recipient_type": "individual",
+                "to": telefono_id,
+                "type": "text",
+                "text": {
+                    "preview_url": False,
+                    "body": MESSAGE_RESPONSE
+                }
+            }
+
 
     
     agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': MESSAGE_RESPONSE, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': agente }))
