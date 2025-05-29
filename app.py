@@ -287,12 +287,11 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     MESSAGE_RESPONSE = ""
     
     user_language = get_user_language(telefono_id)
-    response_idioma = ""
+    #response_idioma = ""
 
-    if "hi" in mensaje or "hola" in mensaje or "start":
-        response_idioma = get_message(user_language,"welcome_initial")
-        
-        MESSAGE_RESPONSE = response_idioma
+    if "hi" in mensaje or "hola" in mensaje or "start" in mensaje:
+        MESSAGE_RESPONSE = get_message(user_language,"welcome_initial")
+
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -303,11 +302,10 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                 "body": MESSAGE_RESPONSE
             }
         }
-    elif "1" in mensaje:
+    elif mensaje == "1":
         set_user_language(telefono_id,"en")
-        response_idioma = get_message("en", "selected_language")
+        MESSAGE_RESPONSE = get_message("en", "selected_language")
 
-        MESSAGE_RESPONSE = response_idioma
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -318,11 +316,10 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                 "body": MESSAGE_RESPONSE
             }
         }
-    elif "2" in mensaje:
+    elif mensaje == "2":
         set_user_language(telefono_id,"es")
-        response_idioma = get_message("es", "selected_language")
+        MESSAGE_RESPONSE = get_message("es", "selected_language")
 
-        MESSAGE_RESPONSE = response_idioma
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -334,9 +331,8 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     else:
-        response_idioma = get_message("en","lang_prompt")
-    
-        MESSAGE_RESPONSE = response_idioma
+        MESSAGE_RESPONSE = get_message("en","lang_prompt")
+        
         data = {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
