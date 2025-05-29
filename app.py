@@ -289,7 +289,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     user_language = get_user_language(telefono_id)
     response_idioma = ""
 
-    if "hi" in mensaje:# or "hola" in mensaje or "start":
+    if "hi" in mensaje or "hola" in mensaje or "start":
         response_idioma = get_message(user_language,"welcome_initial")
         
         MESSAGE_RESPONSE = response_idioma
