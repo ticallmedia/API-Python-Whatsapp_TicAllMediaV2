@@ -7,6 +7,7 @@ import os
 from oauth2client.service_account import ServiceAccountCredentials
 import gspread
 from dotenv import load_dotenv
+from translations import get_message
 load_dotenv()
 
 #_______________________________________________________________________________________
@@ -44,11 +45,7 @@ class Log(db.Model):
 #Crear tabla si no existe
 with app.app_context():
     db.create_all()
-    """
-    prueba1 = Log(telefono_usuario_id = '111111', plataforma = 'whatsapp', mensaje = 'Mensaje prueba 1', estado_usuario = 'Nuevo', etiqueta_campana = 'Vacaciones', agente = 'Ninguno')
-    db.session.add(prueba1)
-    db.session.commit()
-    """
+
 #_______________________________________________________________________________________
 #Recursos
 
@@ -56,24 +53,34 @@ with app.app_context():
 IMA_SALUDO_URL= "https://res.cloudinary.com/dioy4cydg/image/upload/v1747884690/imagen_index_wjog6p.jpg"
 
 #Diccionario de seleccioón de idioma
-MESSAGES = {
-    "es":{
-        "welcome_initial": "👋😊!Hola¡ Bienvenido. Por favor selecciona tu idioma preferido",
-        "selected_language": "👌!Idioma configurado en Español¡. ",
-        "invalid_option": "Opción no válida. Por favor, selecciona. ",
-        "change_language": "Claro, ¿a que Idioma te gustaría cambiar?. ", 
-        "greeting_text": "¡Saludos! 🤖 ¿Intrigado por una estrategia de marketing más inteligente?\n\n En TicAll Media, tenemos ideas que podrían sorprenderte.\n\n¿Te animas a explorar?",
-        "advice": "🧐¿Buscas asesoría sobre algún servicio especial? "
-    },
-    "en": {
-        "welcome_initial": "👋😊Hello! Welcome. Please select your preferred language.",
-        "selected_language": "👌Language set to English.",
-        "invalid_option": "Invalid option. Please select.",
-        "change_language": "Sure, which language would you like to change to?",
-        "greeting_text": "🚀 Hello! How are you? Welcome to our service.",
-        "advice": "🧐You are looking for advice on a special service? "
-    }
-}
+USERS_FILE = 'users.json'
+
+def load_users():
+    #carga el idioma del usuario
+    if os.path.exists(USERS_FILE):
+        with open(USERS_FILE, 'r') as f:
+            return json.load(f)
+    return {}
+
+def save_users(users):
+    #Guarda la preferencia de idioma del usuario
+    with open(USERS_FILE, 'w') as f:
+        json.dump(users, f, indent=4)
+
+def get_user_language(user_id):
+    #obtiene el idioma preferido
+    users = load_users()
+    return users.get(user_id, {}).get("language","en")#por defecto ingles
+
+def set_user_language(user_id, lang):
+    #establece el idioma preferido 
+    users = load_users()
+
+    if user_id not in users:
+        users[user_id]["language"] = lang
+        save_users(users)
+
+
 
 catalogo = False
 agente = "Bot"
@@ -254,6 +261,27 @@ def recibir_mensajes(req):
                     if tipo_interactivo == "button_reply":
                         mensaje = messages['interactive']['button_reply']['id']
                         telefono_id = messages['from']
+
+                        user_language = get_user_language(telefono_id)
+                        response_idioma = ""
+
+                        mensaje = mensaje.lower()
+
+                        if "hi" in mensaje or "hola" in mensaje or "start":
+                            response_idioma = get_message(user_language,"welcome_initial")
+                        elif "1" in mensaje:
+                            set_user_language(telefono_id,"en")
+                            response_idioma = get_message("en", "selected_language")
+                        elif "2" in mensaje:
+                            set_user_language(telefono_id,"es")
+                            response_idioma = get_message("es", "selected_language")
+                        else:
+                            if user_language:
+                                response_idioma = get_message(user_language,"default_response")
+                            else:
+                                response_idioma = get_message("en","lang_prompt")
+
+
                         agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
                         exportar_eventos()
                         enviar_mensaje_whatsapp(telefono_id,mensaje)
@@ -263,6 +291,25 @@ def recibir_mensajes(req):
                 if "text" in messages:
                     mensaje  = messages['text']['body']
                     telefono_id = messages['from']
+
+                    user_language = get_user_language(telefono_id)
+                    response_idioma = ""
+
+                    mensaje = mensaje.lower()
+
+                    if "hi" in mensaje or "hola" in mensaje or "start":
+                        response_idioma = get_message(user_language,"welcome_initial")
+                    elif "1" in mensaje:
+                        set_user_language(telefono_id,"en")
+                        response_idioma = get_message("en", "selected_language")
+                    elif "2" in mensaje:
+                        set_user_language(telefono_id,"es")
+                        response_idioma = get_message("es", "selected_language")
+                    else:
+                        if user_language:
+                            response_idioma = get_message(user_language,"default_response")
+                        else:
+                            response_idioma = get_message("en","lang_prompt")
 
                     agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
                     exportar_eventos()
@@ -363,7 +410,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                 "caption": MESSAGE_RESPONSE
             }
         }
-        
+
     else:
         MESSAGE_RESPONSE = MESSAGES["es"]["welcome_initial"] + "\n\n" + MESSAGES["en"]["welcome_initial"] + "\n\n"
         
