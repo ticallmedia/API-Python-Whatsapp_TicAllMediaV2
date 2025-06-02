@@ -79,7 +79,7 @@ def load_user_preferences_from_sheet():
     for record in records:
         if 'user_id' in record and 'language' in record:
             user_data[record['user_id']] = {"language": record['language']}
-    logging.info(f"Preferencias de usuario cargadas desde Google Sheets: {len(users_data)} usuarios.")
+    logging.info(f"Preferencias de usuario cargadas desde Google Sheets: {len(user_data)} usuarios.")
     return user_data
 
 
