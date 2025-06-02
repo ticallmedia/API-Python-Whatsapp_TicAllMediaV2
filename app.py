@@ -66,28 +66,50 @@ USERS_FILE = 'users.json'
 
 def load_user_preferences_from_sheet():
     #Funciona para actualiza o añade las preferencias del idioma
-    user_data = {}
-    
-    client = get_gspread_client()
-    # Acceder al Google Sheet
-    sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_USERS_PREFERENCES_URL')).worksheet(os.getenv['GOOGLE_USERS_SHEET_NAME'])
-    
-    if not sheet.col_values(1):
-        sheet.append_row(["user_id","language"])
 
-    #obtener todos los resgistros como lista de dicionario
-    records = sheet.get_all_records()
-    for record in records:
-        if 'user_id' in record and 'language' in record:
-            user_data[record['user_id']] = {"language": record['language']}
-    logging.info(f"Preferencias de usuario cargadas desde Google Sheets: {len(user_data)} usuarios.")
-    return user_data
+    try:
 
+        user_data = {}
+        
+        client = get_gspread_client()
+        # Acceder al Google Sheet
+        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_USERS_PREFERENCES_URL')).worksheet(os.getenv['GOOGLE_USERS_SHEET_NAME'])
+        
+        if not sheet.col_values(1):
+            sheet.append_row(["user_id","language"])
+            # aplicando formato y color al titulo
+            formato = {
+                "backgroundColor": {
+                    "red": 0.2,  # Un poco de rojo
+                    "green": 0.4, # Un poco de verde
+                    "blue": 0.8, # Azul más pronunciado para un tono medio
+                },
+                "textFormat": {
+                    "bold": True,
+                    "foregroundColor": {
+                        "red": 1.0,
+                        "green": 1.0,
+                        "blue": 1.0,
+                    }
+                }
+            }
+            sheet.format("A1:B1", formato)
+
+        #obtener todos los resgistros como lista de dicionario
+        records = sheet.get_all_records()
+        for record in records:
+            if 'user_id' in record and 'language' in record:
+                user_data[record['user_id']] = {"language": record['language']}
+        logging.info(f"Preferencias de usuario cargadas desde Google Sheets: {len(user_data)} usuarios.")
+        return user_data
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}),500
 
 def get_user_language(user_id):
     #obtiene el idioma preferido
-    #users = load_user_preferences_from_sheet()
-    users = user_id
+    users = load_user_preferences_from_sheet()
+    #users = user_id
     return users.get(user_id, {}).get("language","en")#por defecto ingles
 
 
