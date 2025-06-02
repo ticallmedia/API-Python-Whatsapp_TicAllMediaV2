@@ -1,4 +1,4 @@
-from flask import Flask, request,json, jsonify, render_template, session
+from flask import Flask, request,json, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import http.client
@@ -16,10 +16,13 @@ Descripción: Primer Bot de Whatsapp para la empresa TicAll Media,
 con descarga en Google Sheet de Conversaciones
 
 Caracteristicasz: 
--Elegir idioma
--guardar seleccion del idioma en el id o telefono
--cambiar idioma inicial
--uso de diccionario para respuesta
+-Elegir idioma: se guarda historico del idioma en un google sheet
+    -guardar seleccion del idioma del id o telefono
+    -cambiar idioma inicial
+-Uso de diccionario: Se crea un diccionario con las respuestas básicas en español e ingles
+-Variables de entorno: Se guarda Todas las credenciales de whatsapp y google para una 
+administración mas segura.
+
 """
 #_______________________________________________________________________________________
 app = Flask(__name__)
@@ -146,7 +149,7 @@ def exportar_eventos():
         client = gspread.authorize(creds)
 
         # Acceder al Google Sheet
-        sheet = client.open_by_url('https://docs.google.com/spreadsheets/d/15dzMHXaVdssg9mHXiepkFn6ajAhaAlss9HAL6NHM6G0/edit?usp=drive_link').sheet1
+        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_USERS_URL')).sheet1
         #sheet = client.open_by_url('https://docs.google.com/spreadsheets/d/1juGRsV5fSs_4LFvAiJNQE8TUMVr8c5KAW-pMaEo6Rh4/edit?usp=drive_link').sheet1
         
         #buscar un texto
