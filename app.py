@@ -278,8 +278,7 @@ def recibir_mensajes(req):
                 tipo = messages['type']
 
                 if tipo == 'interactive':
-                    return 0
-                    """
+                    
                     tipo_interactivo = messages['interactive']['type']
 
                     if tipo_interactivo == "button_reply":
@@ -289,7 +288,7 @@ def recibir_mensajes(req):
                         agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
                         exportar_eventos()
                         enviar_mensaje_whatsapp(telefono_id,mensaje)
-                    """
+                    
                 if "text" in messages:
                     mensaje  = messages['text']['body']
                     telefono_id = messages['from']
@@ -311,20 +310,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     user_language = get_user_language(telefono_id)
     #response_idioma = ""
 
-    if mensaje == "hi" or mensaje == "hola" or mensaje == "start":
-        MESSAGE_RESPONSE = get_message(user_language,"welcome_initial")
-
-        data = {
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
-            "to": telefono_id,
-            "type": "text",
-            "text": {
-                "preview_url": False,
-                "body": MESSAGE_RESPONSE
-            }
-        }
-    elif mensaje == "1":
+    if mensaje == "btn_es":
         #set_user_language(telefono_id,"en")
         MESSAGE_RESPONSE = get_message("en", "selected_language")
 
@@ -338,7 +324,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                 "body": MESSAGE_RESPONSE
             }
         }
-    elif mensaje == "2":
+    elif mensaje == "btn_en":
         #set_user_language(telefono_id,"es")
         MESSAGE_RESPONSE = get_message("es", "selected_language")
 
@@ -353,60 +339,47 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     else:
+        data = mensaje_saludo_general(telefono_id,)
+
+        agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': MESSAGE_RESPONSE, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': agente }))
+        exportar_eventos()
+
+        send_whatsapp_message(data)
+
         MESSAGE_RESPONSE = get_message("en","lang_prompt")
         
-        data = {
+        data= {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
             "to": telefono_id,
-            "type": "text",
-            "text": {
-                "preview_url": False,
-                "body": MESSAGE_RESPONSE
+            "type": "interactive",
+            "interactive": {
+                "type": "button",
+                "body": {
+                    "text" : MESSAGE_RESPONSE
+                },
+                "footer": {
+                    "text" : "Select one of the options:"
+                },
+                "action": {
+                    "buttons": [
+                        {
+                            "type" : "reply",
+                            "reply" : {
+                                "id" : "btn_es",
+                                "title": "Español"
+                            } 
+                        },{
+                            "type" : "reply",
+                            "reply" : {
+                                "id" : "btn_en",
+                                "title": "English"
+                            } 
+                        }
+                    ]
+                }                
             }
         }
-
-        """
-        data = {
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
-            "to": telefono_id,
-            "type": "text",
-            "text": {
-                "preview_url": False,
-                "body": "🚀 Hola, visita mi web https://ticallmedia.com/.com para más información.\n \n📌Por favor, ingresa un número #️⃣ para recibir información.\n \n1️⃣. Información de los Servicios. 💼\n2️⃣. Ubicación del local. 📍\n3️⃣. Enviar catalogo en PDF. 📄\n4️⃣. Audio explicando a mayor detalle. 🎧\n5️⃣. Video de Introducción. ⏯️\n6️⃣. Hablar con un Agente. 🙋‍♂️\n7️⃣. Horario de Atención. 🕜 \n0️⃣. Regresar al Menú. 🕜"
-            }
-        }
-        
-        if user_language:
-            response_idioma = get_message(user_language,"default_response")
-
-            MESSAGE_RESPONSE = response_idioma
-            data = {
-                "messaging_product": "whatsapp",
-                "recipient_type": "individual",
-                "to": telefono_id,
-                "type": "text",
-                "text": {
-                    "preview_url": False,
-                    "body": MESSAGE_RESPONSE
-                }
-            }
-        else:
-            response_idioma = get_message("en","lang_prompt")
-        
-            MESSAGE_RESPONSE = response_idioma
-            data = {
-                "messaging_product": "whatsapp",
-                "recipient_type": "individual",
-                "to": telefono_id,
-                "type": "text",
-                "text": {
-                    "preview_url": False,
-                    "body": MESSAGE_RESPONSE
-                }
-            }
-        """
 
 
     
@@ -414,6 +387,25 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     exportar_eventos()
 
     send_whatsapp_message(data)
+
+
+def revision_idioma():
+    pass
+
+def mensaje_saludo_general(telefono_id):
+    MESSAGE_RESPONSE = get_message("en","welcome_initial")
+        
+    data = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": telefono_id,
+        "type": "text",
+        "text": {
+            "preview_url": False,
+            "body": MESSAGE_RESPONSE
+        }
+    }
+    return data
 
 #_______________________________________________________________________________________
 

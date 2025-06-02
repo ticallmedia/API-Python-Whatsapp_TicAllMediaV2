@@ -1,6 +1,7 @@
 # API-Python-Whatsapp_TicAllMedia
 
 #Descripción: Primer Bot de Whatsapp para la empresa TicAll Media, 
+
 #con descarga en Google Sheet de Conversaciones
 
 #Caracteristicas: 
@@ -10,6 +11,8 @@
 #Adicionalmente, permite el cambio del idioma asi ya tengo uno preferido
 
 #Uso de diccionario: Se crea un diccionario con las respuestas básicas en español e ingles
+
+#Historico de Conversaciones: Ademas de que se guarda en SQLite, las conversaciones se exportan a google sheet a medida de que se van desarrollando.
 
 #Variables de entorno: Se guarda Todas las credenciales de whatsapp y google para una 
 #administración mas segura.
