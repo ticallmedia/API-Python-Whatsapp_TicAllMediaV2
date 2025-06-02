@@ -2,6 +2,7 @@ from flask import Flask, request,json, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import http.client
+import logging
 
 import os
 from oauth2client.service_account import ServiceAccountCredentials
@@ -26,6 +27,10 @@ administración mas segura.
 """
 #_______________________________________________________________________________________
 app = Flask(__name__)
+
+# Configura el logger (útil para depurar en Render)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 #Configuracion de base de datos SQLITE
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///metapython.db'
@@ -58,12 +63,13 @@ IMA_SALUDO_URL= "https://res.cloudinary.com/dioy4cydg/image/upload/v1747884690/i
 #Diccionario de seleccioón de idioma
 USERS_FILE = 'users.json'
 
-def load_user_preferences_from_sheet(user_id,lang):
+def load_user_preferences_from_sheet():
+    #Funciona para actualiza o añade las preferencias del idioma
     user_data = {}
-    #Actualiza o añade las preferencias del idioam
+    
     client = get_gspread_client()
     # Acceder al Google Sheet
-    sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_EVENTS_URL')).worksheet(os.getenv['GOOGLE_USERS_SHEET_NAME'])
+    sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_USERS_PREFERENCES_URL')).worksheet(os.getenv['GOOGLE_USERS_SHEET_NAME'])
     
     if not sheet.col_values(1):
         sheet.append_row(["user_id","language"])
@@ -73,6 +79,7 @@ def load_user_preferences_from_sheet(user_id,lang):
     for record in records:
         if 'user_id' in record and 'language' in record:
             user_data[record['user_id']] = {"language": record['language']}
+    logging.info(f"Preferencias de usuario cargadas desde Google Sheets: {len(users_data)} usuarios.")
     return user_data
 
 
@@ -315,7 +322,7 @@ def recibir_mensajes(req):
                     telefono_id = messages['from']
 
                     #obtiene e idioma del usuario
-                    #user_language = get_user_language(telefono_id)
+                    user_language = get_user_language(telefono_id)
 
                     agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
                     exportar_eventos()
@@ -332,10 +339,12 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     MESSAGE_RESPONSE = ""
     user_language = ""
     
-    """
+    
     #obtiene e idioma del usuario
     user_language = get_user_language(telefono_id)
     #response_idioma = ""
+    
+    """
 
     if user_language != "":
         #set_user_language(telefono_id,"en")
@@ -382,6 +391,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     else:
+
         MESSAGE_RESPONSE = get_message("en","welcome_initial")
         data = mensaje_general(telefono_id,MESSAGE_RESPONSE)
 
