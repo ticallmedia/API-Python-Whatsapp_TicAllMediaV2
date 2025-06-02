@@ -391,6 +391,11 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': MESSAGE_RESPONSE, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': agente }))
     exportar_eventos()
 
+    send_whatsapp_message(data)
+
+    
+
+def send_whatsapp_message(data):
     data = json.dumps(data)
 
     #datos META
@@ -410,8 +415,6 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
         agregar_mensajes_log(json.dumps(e))
     finally:
         connection.close()
-
-
 
 #_______________________________________________________________________________________
 
