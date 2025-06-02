@@ -315,7 +315,7 @@ def recibir_mensajes(req):
                     telefono_id = messages['from']
 
                     #obtiene e idioma del usuario
-                    user_language = get_user_language(telefono_id)
+                    #user_language = get_user_language(telefono_id)
 
                     agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
                     exportar_eventos()
@@ -332,6 +332,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     MESSAGE_RESPONSE = ""
     user_language = ""
     
+    """
     #obtiene e idioma del usuario
     user_language = get_user_language(telefono_id)
     #response_idioma = ""
@@ -350,7 +351,9 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                 "body": MESSAGE_RESPONSE
             }
         }
-    elif mensaje == "btn_es":
+    """
+    
+    if mensaje == "btn_es":
         #set_user_language(telefono_id,"en")
         MESSAGE_RESPONSE = get_message("es", "selected_language")
 
