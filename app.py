@@ -129,32 +129,12 @@ def exportar_eventos():
     try:
         # Obtener eventos desde SQLAlchemy
         eventos = Log.query.all()
-
-        creds_dict = get_google_credentials_from_env()
-
-        # Configurar acceso a Google Sheets
-        scope = [
-            "https://spreadsheets.google.com/feeds",
-            "https://www.googleapis.com/auth/drive",
-        ]   
-
-        # Convertir el diccionario a un objeto tipo archivo usando json.dumps + StringIO
-        from io import StringIO
-        json_creds = json.dumps(creds_dict)
-        
-        # Obtener credenciales desde variables de entorno
-        creds = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(json_creds), scope)
-
-        # Autenticar con gspread
-        client = gspread.authorize(creds)
-
+        client = get_gspread_client()
         # Acceder al Google Sheet
-        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_USERS_URL')).sheet1
-        #sheet = client.open_by_url('https://docs.google.com/spreadsheets/d/1juGRsV5fSs_4LFvAiJNQE8TUMVr8c5KAW-pMaEo6Rh4/edit?usp=drive_link').sheet1
+        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_USERS_URL')).sheet1    
         
         #buscar un texto
         titulos = []
-
         cells = sheet.findall('ID')
         for i in cells:
             titulos.append(i.address)
@@ -202,6 +182,24 @@ def exportar_eventos():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+def get_gspread_client():
+    #autentica y devuelve el cliente gspread
+    creds_dict = get_google_credentials_from_env()
+    # Configurar acceso a Google Sheets
+    scope = [
+        "https://spreadsheets.google.com/feeds",
+        "https://www.googleapis.com/auth/drive",
+    ]   
+    # Convertir el diccionario a un objeto tipo archivo usando json.dumps + StringIO
+    from io import StringIO
+    json_creds = json.dumps(creds_dict)
+    # Obtener credenciales desde variables de entorno
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(json_creds), scope)
+    # Autenticar con gspread
+    client = gspread.authorize(creds)
+
+    return client
+
 #credenciales google en variables de entorno
 def get_google_credentials_from_env():
     creds_dict = {
@@ -217,7 +215,6 @@ def get_google_credentials_from_env():
         "client_x509_cert_url": os.environ["GOOGLE_CLIENT_CERT_URL"]
     }
     return creds_dict
-
 
 #_______________________________________________________________________________________
 #Uso del Token y recepcion de mensajes
