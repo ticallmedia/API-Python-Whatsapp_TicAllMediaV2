@@ -86,7 +86,8 @@ def load_user_preferences_from_sheet():
 
 def get_user_language(user_id):
     #obtiene el idioma preferido
-    users = load_user_preferences_from_sheet()
+    #users = load_user_preferences_from_sheet()
+    users = user_id
     return users.get(user_id, {}).get("language","en")#por defecto ingles
 
 
