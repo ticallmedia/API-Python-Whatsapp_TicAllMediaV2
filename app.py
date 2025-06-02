@@ -111,7 +111,7 @@ def get_user_language(user_id):
     users = load_user_preferences_from_sheet()
     #users = user_id
     #return users.get(user_id, {}).get("language","en")#por defecto ingles
-    return "e"
+    return "en"
 
 
 def load_users():
