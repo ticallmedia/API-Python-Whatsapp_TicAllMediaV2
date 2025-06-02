@@ -124,7 +124,64 @@ def agregar_mensajes_log(datos_json):
     db.session.commit()
 
 #_______________________________________________________________________________________
+#API whatsapp para el nevio de mensajes
+def send_whatsapp_message(data):
+    data = json.dumps(data)
+
+    #datos META
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {os.environ['META_WHATSAPP_ACCESS_TOKEN']}"
+    }
+
+    connection = http.client.HTTPSConnection("graph.facebook.com")
+
+    try:
+        connection.request("POST",f"/{os.environ['API_WHATSAPP_VERSION']}/{os.environ['META_WHATSAPP_PHONE_NUMBER_ID']}/messages",data, headers)
+        response = connection.getresponse()
+        print(response.status, response.reason)
+    
+    except Exception as e:
+        agregar_mensajes_log(json.dumps(e))
+    finally:
+        connection.close()
+
+#_______________________________________________________________________________________
 #API de Google Sheet para exportar información
+def get_gspread_client():
+    #autentica y devuelve el cliente gspread
+    creds_dict = get_google_credentials_from_env()
+    # Configurar acceso a Google Sheets
+    scope = [
+        "https://spreadsheets.google.com/feeds",
+        "https://www.googleapis.com/auth/drive",
+    ]   
+    # Convertir el diccionario a un objeto tipo archivo usando json.dumps + StringIO
+    from io import StringIO
+    json_creds = json.dumps(creds_dict)
+    # Obtener credenciales desde variables de entorno
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(json_creds), scope)
+    # Autenticar con gspread
+    client = gspread.authorize(creds)
+
+    return client
+
+#credenciales google en variables de entorno
+def get_google_credentials_from_env():
+    creds_dict = {
+        "type": os.environ["GOOGLE_TYPE"],
+        "project_id": os.environ["GOOGLE_PROJECT_ID"],
+        "private_key_id": os.environ["GOOGLE_PRIVATE_KEY_ID"],
+        "private_key": os.environ["GOOGLE_PRIVATE_KEY"].replace("\\n", "\n"),
+        "client_email": os.environ["GOOGLE_CLIENT_EMAIL"],
+        "client_id": os.environ["GOOGLE_CLIENT_ID"],
+        "auth_uri": os.environ["GOOGLE_AUTH_URI"],
+        "token_uri": os.environ["GOOGLE_TOKEN_URI"],
+        "auth_provider_x509_cert_url": os.environ["GOOGLE_AUTH_PROVIDER_CERT_URL"],
+        "client_x509_cert_url": os.environ["GOOGLE_CLIENT_CERT_URL"]
+    }
+    return creds_dict
+
 def exportar_eventos():
     try:
         # Obtener eventos desde SQLAlchemy
@@ -181,41 +238,6 @@ def exportar_eventos():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
-def get_gspread_client():
-    #autentica y devuelve el cliente gspread
-    creds_dict = get_google_credentials_from_env()
-    # Configurar acceso a Google Sheets
-    scope = [
-        "https://spreadsheets.google.com/feeds",
-        "https://www.googleapis.com/auth/drive",
-    ]   
-    # Convertir el diccionario a un objeto tipo archivo usando json.dumps + StringIO
-    from io import StringIO
-    json_creds = json.dumps(creds_dict)
-    # Obtener credenciales desde variables de entorno
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(json_creds), scope)
-    # Autenticar con gspread
-    client = gspread.authorize(creds)
-
-    return client
-
-#credenciales google en variables de entorno
-def get_google_credentials_from_env():
-    creds_dict = {
-        "type": os.environ["GOOGLE_TYPE"],
-        "project_id": os.environ["GOOGLE_PROJECT_ID"],
-        "private_key_id": os.environ["GOOGLE_PRIVATE_KEY_ID"],
-        "private_key": os.environ["GOOGLE_PRIVATE_KEY"].replace("\\n", "\n"),
-        "client_email": os.environ["GOOGLE_CLIENT_EMAIL"],
-        "client_id": os.environ["GOOGLE_CLIENT_ID"],
-        "auth_uri": os.environ["GOOGLE_AUTH_URI"],
-        "token_uri": os.environ["GOOGLE_TOKEN_URI"],
-        "auth_provider_x509_cert_url": os.environ["GOOGLE_AUTH_PROVIDER_CERT_URL"],
-        "client_x509_cert_url": os.environ["GOOGLE_CLIENT_CERT_URL"]
-    }
-    return creds_dict
-
 #_______________________________________________________________________________________
 #Uso del Token y recepcion de mensajes
 
@@ -392,29 +414,6 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     exportar_eventos()
 
     send_whatsapp_message(data)
-
-    
-
-def send_whatsapp_message(data):
-    data = json.dumps(data)
-
-    #datos META
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer EAASP0HB8jAsBOymZAoWysh3biLLOVLS3dYoAYZA9jl2xKZBpZAm3W2TxEdKRMTsZB3hEVbze2OJP4HKPe5pujCqXUUo7ZBAk0eLgVzGHyKScY33aqhoAtPouk9oPC1XigqXM3bq2KLWSMIdRklJOGYr5SYzalpn0EsA1GlQg67d4qBInlt8oTigoHgh43KLXt4LgZDZD"
-    }
-
-    connection = http.client.HTTPSConnection("graph.facebook.com")
-
-    try:
-        connection.request("POST","/v22.0/593835203818298/messages",data, headers)
-        response = connection.getresponse()
-        print(response.status, response.reason)
-    
-    except Exception as e:
-        agregar_mensajes_log(json.dumps(e))
-    finally:
-        connection.close()
 
 #_______________________________________________________________________________________
 

@@ -5,11 +5,12 @@
 
 #Caracteristicas: 
 
-#Elegir idioma: se guarda historico del idioma en un google sheet
-#guardar seleccion del idioma del id o telefono
-#cambiar idioma inicial
+#Elegir idioma: se guarda historico del idioma en un google sheet del id o telefono
+
+#Adicionalmente, permite el cambio del idioma asi ya tengo uno preferido
 
 #Uso de diccionario: Se crea un diccionario con las respuestas básicas en español e ingles
 
 #Variables de entorno: Se guarda Todas las credenciales de whatsapp y google para una 
 #administración mas segura.
+
