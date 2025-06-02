@@ -262,7 +262,7 @@ def exportar_eventos():
 #_______________________________________________________________________________________
 #Uso del Token y recepcion de mensajes
 
-TOKEN_CODE = 'TICALLCODE' #os.getenv('META_WHATSAPP_TOKEN_CODE')
+TOKEN_CODE = os.getenv('META_WHATSAPP_TOKEN_CODE')
 
 @app.route('/webhook', methods = ['GET','POST'])
 
