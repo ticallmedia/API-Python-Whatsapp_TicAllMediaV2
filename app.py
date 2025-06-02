@@ -322,7 +322,7 @@ def recibir_mensajes(req):
                     telefono_id = messages['from']
 
                     #obtiene e idioma del usuario
-                    user_language = get_user_language(telefono_id)
+                    #user_language = get_user_language(telefono_id)
 
                     agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
                     exportar_eventos()
