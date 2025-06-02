@@ -340,7 +340,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
         }
     else:
         data = mensaje_saludo_general(telefono_id)
-        
+
         mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
 
         #agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': MESSAGE_RESPONSE, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': agente }))
@@ -407,7 +407,7 @@ def mensaje_saludo_general(telefono_id):
             "body": MESSAGE_RESPONSE
         }
     }
-    return data
+    return data,MESSAGE_RESPONSE
 
 
 def mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente):
