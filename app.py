@@ -58,6 +58,30 @@ IMA_SALUDO_URL= "https://res.cloudinary.com/dioy4cydg/image/upload/v1747884690/i
 #Diccionario de seleccioón de idioma
 USERS_FILE = 'users.json'
 
+def load_user_preferences_from_sheet(user_id,lang):
+    user_data = {}
+    #Actualiza o añade las preferencias del idioam
+    client = get_gspread_client()
+    # Acceder al Google Sheet
+    sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_EVENTS_URL')).worksheet(os.getenv['GOOGLE_USERS_SHEET_NAME'])
+    
+    if not sheet.col_values(1):
+        sheet.append_row(["user_id","language"])
+
+    #obtener todos los resgistros como lista de dicionario
+    records = sheet.get_all_records()
+    for record in records:
+        if 'user_id' in record and 'language' in record:
+            user_data[record['user_id']] = {"language": record['language']}
+    return user_data
+
+
+def get_user_language(user_id):
+    #obtiene el idioma preferido
+    users = load_user_preferences_from_sheet()
+    return users.get(user_id, {}).get("language","en")#por defecto ingles
+
+
 def load_users():
     #carga el idioma del usuario
     if os.path.exists(USERS_FILE):
@@ -70,10 +94,7 @@ def save_users(users):
     with open(USERS_FILE, 'w') as f:
         json.dump(users, f, indent=4)
 
-def get_user_language(user_id):
-    #obtiene el idioma preferido
-    users = load_users()
-    return users.get(user_id, {}).get("language","en")#por defecto ingles
+
 
 def set_user_language(user_id, lang):
     #establece el idioma preferido 
@@ -188,7 +209,7 @@ def exportar_eventos():
         eventos = Log.query.all()
         client = get_gspread_client()
         # Acceder al Google Sheet
-        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_USERS_URL')).sheet1    
+        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_EVENTS_URL')).sheet1    
         
         #buscar un texto
         titulos = []
@@ -241,7 +262,7 @@ def exportar_eventos():
 #_______________________________________________________________________________________
 #Uso del Token y recepcion de mensajes
 
-TOKEN_CODE = 'TICALLCODE'
+TOKEN_CODE = os.getenv('META_WHATSAPP_TOKEN_CODE')
 
 @app.route('/webhook', methods = ['GET','POST'])
 
@@ -293,6 +314,9 @@ def recibir_mensajes(req):
                     mensaje  = messages['text']['body']
                     telefono_id = messages['from']
 
+                    #obtiene e idioma del usuario
+                    user_language = get_user_language(telefono_id)
+
                     agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
                     exportar_eventos()
                     enviar_mensaje_whatsapp(telefono_id,mensaje)
@@ -306,11 +330,27 @@ def recibir_mensajes(req):
 def enviar_mensaje_whatsapp(telefono_id,mensaje):
     mensaje = mensaje.lower()
     MESSAGE_RESPONSE = ""
+    user_language = ""
     
+    #obtiene e idioma del usuario
     user_language = get_user_language(telefono_id)
     #response_idioma = ""
 
-    if mensaje == "btn_es":
+    if user_language != "":
+        #set_user_language(telefono_id,"en")
+        MESSAGE_RESPONSE = get_message(user_language, "default_response")
+
+        data = {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": telefono_id,
+            "type": "text",
+            "text": {
+                "preview_url": False,
+                "body": MESSAGE_RESPONSE
+            }
+        }
+    elif mensaje == "btn_es":
         #set_user_language(telefono_id,"en")
         MESSAGE_RESPONSE = get_message("es", "selected_language")
 
