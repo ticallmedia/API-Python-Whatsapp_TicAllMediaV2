@@ -312,7 +312,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
 
     if mensaje == "btn_es":
         #set_user_language(telefono_id,"en")
-        MESSAGE_RESPONSE = get_message("en", "selected_language")
+        MESSAGE_RESPONSE = get_message("es", "selected_language")
 
         data = {
             "messaging_product": "whatsapp",
@@ -326,7 +326,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
         }
     elif mensaje == "btn_en":
         #set_user_language(telefono_id,"es")
-        MESSAGE_RESPONSE = get_message("es", "selected_language")
+        MESSAGE_RESPONSE = get_message("en", "selected_language")
 
         data = {
             "messaging_product": "whatsapp",
@@ -339,12 +339,14 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     else:
-        data = mensaje_saludo_general(telefono_id,)
+        data = mensaje_saludo_general(telefono_id)
+        
+        mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
 
-        agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': MESSAGE_RESPONSE, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': agente }))
-        exportar_eventos()
+        #agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': MESSAGE_RESPONSE, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': agente }))
+        #exportar_eventos()
 
-        send_whatsapp_message(data)
+        #send_whatsapp_message(data)
 
         MESSAGE_RESPONSE = get_message("en","lang_prompt")
         
@@ -381,12 +383,12 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
 
-
+    mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
     
-    agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': MESSAGE_RESPONSE, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': agente }))
-    exportar_eventos()
+    #agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': MESSAGE_RESPONSE, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': agente }))
+    #exportar_eventos()
 
-    send_whatsapp_message(data)
+    #send_whatsapp_message(data)
 
 
 def revision_idioma():
@@ -407,6 +409,12 @@ def mensaje_saludo_general(telefono_id):
     }
     return data
 
+
+def mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente):
+    agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': MESSAGE_RESPONSE, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': agente }))
+    exportar_eventos()
+
+    send_whatsapp_message(data)
 #_______________________________________________________________________________________
 
 if __name__=='__main__':
