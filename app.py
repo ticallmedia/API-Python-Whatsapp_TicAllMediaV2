@@ -100,8 +100,8 @@ def load_user_preferences_from_sheet():
         for record in records:
             if 'user_id' in record and 'language' in record:
                 user_data[record['user_id']] = {"language": record['language']}
-        #logging.info(f"Preferencias de usuario cargadas desde Google Sheets: {len(user_data)} usuarios.")
-        logging.info(f"Preferencias de usuario cargadas desde Google Sheets: {user_data} usuarios.")
+        logging.info(f"Preferencias de usuario cargadas desde Google Sheets: {len(user_data)} usuarios.")
+        #logging.info(f"Preferencias de usuario cargadas desde Google Sheets: {user_data} usuarios.")
         return user_data
     
     except Exception as e:
@@ -346,20 +346,31 @@ def recibir_mensajes(req):
                         mensaje = messages['interactive']['button_reply']['id']
                         telefono_id = messages['from']
 
-                        agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
-                        exportar_eventos()
-                        enviar_mensaje_whatsapp(telefono_id,mensaje)
+                        #obtiene e idioma del usuario
+                        user_language = get_user_language(telefono_id)
+
+                        if user_language in ["es", "en"]:
+                            agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
+                            exportar_eventos()
+                            enviar_mensaje_whatsapp(telefono_id,mensaje,user_language)
+                        else:                        
+                            revision_idioma(telefono_id,mensaje,user_language)
+
+                            
                     
                 if "text" in messages:
                     mensaje  = messages['text']['body']
                     telefono_id = messages['from']
 
                     #obtiene e idioma del usuario
-                    #user_language = get_user_language(telefono_id)
+                    user_language = get_user_language(telefono_id)
 
-                    agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
-                    exportar_eventos()
-                    enviar_mensaje_whatsapp(telefono_id,mensaje)
+                    if user_language in ["es", "en"]:
+                        agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
+                        exportar_eventos()
+                        enviar_mensaje_whatsapp(telefono_id,mensaje,user_language)
+                    else:                        
+                        revision_idioma(telefono_id,mensaje,user_language)
 
         return jsonify({'message':'EVENT_RECEIVED'})
     except Exception as e:
@@ -367,34 +378,10 @@ def recibir_mensajes(req):
     
 #_______________________________________________________________________________________
 #Enviar mensajes a whatsapp
-def enviar_mensaje_whatsapp(telefono_id,mensaje):
+def revision_idioma(telefono_id,mensaje,user_language):
     mensaje = mensaje.lower()
     MESSAGE_RESPONSE = ""
-    user_language = ""
     
-    
-    #obtiene e idioma del usuario
-    user_language = get_user_language(telefono_id)
-    #response_idioma = ""
-    
-    
-    """
-    if user_language != "":
-        #set_user_language(telefono_id,"en")
-        MESSAGE_RESPONSE = get_message(user_language, "default_response")
-
-        data = {
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
-            "to": telefono_id,
-            "type": "text",
-            "text": {
-                "preview_url": False,
-                "body": MESSAGE_RESPONSE
-            }
-        }
-    """
-
     if mensaje == "btn_es":
         #set_user_language(telefono_id,"en")
         MESSAGE_RESPONSE = get_message("es", "selected_language")
@@ -424,7 +411,6 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     else:
-        #if user_language and user_language in ["es", "en"]:
         if user_language in ["es", "en"]:
             MESSAGE_RESPONSE = get_message(user_language, "default_response")
             logging.info(f"idioma Seleccionado: {user_language}.")
@@ -484,8 +470,39 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
 
 
-def revision_idioma():
-    pass
+def enviar_mensaje_whatsapp(telefono_id,mensaje,user_language):
+    mensaje = mensaje.lower()
+    MESSAGE_RESPONSE = ""
+
+    if mensaje == "hola":
+        #set_user_language(telefono_id,"en")
+        MESSAGE_RESPONSE = get_message(user_language, "default_response")
+
+        data= {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": telefono_id,
+            "type": "image",
+            "image": {
+                "link": IMA_SALUDO_URL,
+                "caption": MESSAGE_RESPONSE
+            }
+        }
+    else:
+        MESSAGE_RESPONSE = get_message(user_language, "default_response")
+
+        data= {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": telefono_id,
+            "type": "image",
+            "image": {
+                "link": IMA_SALUDO_URL,
+                "caption": MESSAGE_RESPONSE
+            }
+        }
+
+    mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
 
 def mensaje_general(telefono_id,MESSAGE_RESPONSE):
         
