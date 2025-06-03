@@ -417,7 +417,8 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     else:
-        if user_language and user_language in ["es", "en"]:
+        #if user_language and user_language in ["es", "en"]:
+        if user_language in ["es", "en"]:
             MESSAGE_RESPONSE = get_message(user_language, "default_response")
             print(f"user_language = {user_language}")
         else:
