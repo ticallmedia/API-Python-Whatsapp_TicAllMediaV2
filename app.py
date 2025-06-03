@@ -371,7 +371,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     #response_idioma = ""
     
     
-
+    """
     if user_language != "":
         #set_user_language(telefono_id,"en")
         MESSAGE_RESPONSE = get_message(user_language, "default_response")
@@ -386,7 +386,9 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                 "body": MESSAGE_RESPONSE
             }
         }
-    elif mensaje == "btn_es":
+    """
+
+    if mensaje == "btn_es":
         #set_user_language(telefono_id,"en")
         MESSAGE_RESPONSE = get_message("es", "selected_language")
 
@@ -415,46 +417,49 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
             }
         }
     else:
+        if user_language:
+            MESSAGE_RESPONSE = get_message(user_language, "default_response")
+        else:
 
-        MESSAGE_RESPONSE = get_message("en","welcome_initial")
-        data = mensaje_general(telefono_id,MESSAGE_RESPONSE)
+            MESSAGE_RESPONSE = get_message("en","welcome_initial")
+            data = mensaje_general(telefono_id,MESSAGE_RESPONSE)
 
-        mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
+            mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
 
-        MESSAGE_RESPONSE = get_message("en","lang_prompt")
-        
-        data= {
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
-            "to": telefono_id,
-            "type": "interactive",
-            "interactive": {
-                "type": "button",
-                "body": {
-                    "text" : MESSAGE_RESPONSE
-                },
-                "footer": {
-                    "text" : "Select one of the options:"
-                },
-                "action": {
-                    "buttons": [
-                        {
-                            "type" : "reply",
-                            "reply" : {
-                                "id" : "btn_es",
-                                "title": "Español"
-                            } 
-                        },{
-                            "type" : "reply",
-                            "reply" : {
-                                "id" : "btn_en",
-                                "title": "English"
-                            } 
-                        }
-                    ]
-                }                
+            MESSAGE_RESPONSE = get_message("en","lang_prompt")
+            
+            data= {
+                "messaging_product": "whatsapp",
+                "recipient_type": "individual",
+                "to": telefono_id,
+                "type": "interactive",
+                "interactive": {
+                    "type": "button",
+                    "body": {
+                        "text" : MESSAGE_RESPONSE
+                    },
+                    "footer": {
+                        "text" : "Select one of the options:"
+                    },
+                    "action": {
+                        "buttons": [
+                            {
+                                "type" : "reply",
+                                "reply" : {
+                                    "id" : "btn_es",
+                                    "title": "Español"
+                                } 
+                            },{
+                                "type" : "reply",
+                                "reply" : {
+                                    "id" : "btn_en",
+                                    "title": "English"
+                                } 
+                            }
+                        ]
+                    }                
+                }
             }
-        }
 
     mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
 
