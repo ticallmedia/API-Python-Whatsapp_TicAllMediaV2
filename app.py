@@ -370,7 +370,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     user_language = get_user_language(telefono_id)
     #response_idioma = ""
     
-    """
+    
 
     if user_language != "":
         #set_user_language(telefono_id,"en")
@@ -386,9 +386,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
                 "body": MESSAGE_RESPONSE
             }
         }
-    """
-    
-    if mensaje == "btn_es":
+    elif mensaje == "btn_es":
         #set_user_language(telefono_id,"en")
         MESSAGE_RESPONSE = get_message("es", "selected_language")
 
