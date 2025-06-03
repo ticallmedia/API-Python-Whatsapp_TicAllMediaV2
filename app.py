@@ -109,10 +109,15 @@ def load_user_preferences_from_sheet():
 
 def get_user_language(user_id):
     #obtiene el idioma preferido
+    logging.info(f"Buscando idioma para user_id={user_id} (tipo: {type(user_id)})")
     users = load_user_preferences_from_sheet()
+    #convirtiendo el userd_id como string
+    users = {str(k): v for k, v in users.items()} 
+
     logging.info(f"id de usuarios: {users}")
-    return users.get(user_id, {}).get("language","en")#por defecto ingles
-    #return "en"
+    
+    return users.get(str(user_id), {}).get("language","en")#por defecto ingles
+
 
 
 def load_users():
