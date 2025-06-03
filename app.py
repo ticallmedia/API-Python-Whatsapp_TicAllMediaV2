@@ -100,7 +100,8 @@ def load_user_preferences_from_sheet():
         for record in records:
             if 'user_id' in record and 'language' in record:
                 user_data[record['user_id']] = {"language": record['language']}
-        logging.info(f"Preferencias de usuario cargadas desde Google Sheets: {len(user_data)} usuarios.")
+        #logging.info(f"Preferencias de usuario cargadas desde Google Sheets: {len(user_data)} usuarios.")
+        logging.info(f"Preferencias de usuario cargadas desde Google Sheets: {user_data} usuarios.")
         return user_data
     
     except Exception as e:
@@ -109,7 +110,7 @@ def load_user_preferences_from_sheet():
 def get_user_language(user_id):
     #obtiene el idioma preferido
     users = load_user_preferences_from_sheet()
-    #users = user_id
+    logging.info(f"id de usuarios: {users}")
     return users.get(user_id, {}).get("language","en")#por defecto ingles
     #return "en"
 
@@ -420,8 +421,18 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
         #if user_language and user_language in ["es", "en"]:
         if user_language in ["es", "en"]:
             MESSAGE_RESPONSE = get_message(user_language, "default_response")
-            print(f"user_language = {user_language}")
             logging.info(f"idioma Seleccionado: {user_language}.")
+
+            data = {
+                "messaging_product": "whatsapp",
+                "recipient_type": "individual",
+                "to": telefono_id,
+                "type": "text",
+                "text": {
+                    "preview_url": False,
+                    "body": MESSAGE_RESPONSE
+                }
+            }
         else:
 
             MESSAGE_RESPONSE = get_message("en","welcome_initial")
