@@ -73,7 +73,7 @@ def load_user_preferences_from_sheet():
         
         client = get_gspread_client()
         # Acceder al Google Sheet
-        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_USERS_PREFERENCES_URL')).worksheet(os.getenv['GOOGLE_USERS_SHEET_NAME'])
+        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_USERS_PREFERENCES_URL')).worksheet(os.getenv('GOOGLE_USERS_SHEET_NAME'))
         
         if not sheet.col_values(1):
             sheet.append_row(["user_id","language"])
@@ -243,7 +243,7 @@ def exportar_eventos():
         # Acceder al Google Sheet
         #sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_EVENTS_URL')).sheet1    
         #sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_USERS_PREFERENCES_URL')).worksheet(os.getenv['GOOGLE_USERS_SHEET_NAME'])
-        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_EVENTS_URL')).worksheet(os.getenv['GOOGLE_USERS_SHEET_NAME'])
+        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_EVENTS_URL')).worksheet(os.getenv('GOOGLE_USERS_SHEET_NAME'))
         
         #buscar un texto
         titulos = []
