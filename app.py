@@ -73,7 +73,7 @@ def load_user_preferences_from_sheet():
         
         client = get_gspread_client()
         # Acceder al Google Sheet
-        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_USERS_PREFERENCES_URL')).worksheet(os.getenv('GOOGLE_USERS_SHEET_NAME'))
+        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_EVENTS_URL')).worksheet(os.getenv('GOOGLE_USERS_SHEET_NAME2'))
         
         if not sheet.col_values(1):
             sheet.append_row(["user_id","language"])
@@ -242,8 +242,7 @@ def exportar_eventos():
         client = get_gspread_client()
         # Acceder al Google Sheet
         #sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_EVENTS_URL')).sheet1    
-        #sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_USERS_PREFERENCES_URL')).worksheet(os.getenv['GOOGLE_USERS_SHEET_NAME'])
-        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_EVENTS_URL')).worksheet(os.getenv('GOOGLE_USERS_SHEET_NAME'))
+        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_EVENTS_URL')).worksheet(os.getenv('GOOGLE_USERS_SHEET_NAME1'))
         
         #buscar un texto
         titulos = []
@@ -368,7 +367,7 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje):
     
     
     #obtiene e idioma del usuario
-    #user_language = get_user_language(telefono_id)
+    user_language = get_user_language(telefono_id)
     #response_idioma = ""
     
     """
