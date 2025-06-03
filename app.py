@@ -241,7 +241,8 @@ def exportar_eventos():
         eventos = Log.query.all()
         client = get_gspread_client()
         # Acceder al Google Sheet
-        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_EVENTS_URL')).sheet1    
+        #sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_EVENTS_URL')).sheet1    
+        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_USERS_PREFERENCES_URL')).worksheet(os.getenv['GOOGLE_USERS_SHEET_NAME'])
         
         #buscar un texto
         titulos = []
