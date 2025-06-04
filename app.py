@@ -101,15 +101,50 @@ def load_user_preferences_from_sheet():
             if 'user_id' in record and 'language' in record:
                 user_data[record['user_id']] = {"language": record['language']}
         logging.info(f"Preferencias de usuario cargadas desde Google Sheets: {len(user_data)} usuarios.")
-        #logging.info(f"Preferencias de usuario cargadas desde Google Sheets: {user_data} usuarios.")
         return user_data
     
     except Exception as e:
-        return jsonify({'error': str(e)}),500
+        return jsonify({'error': str(e)}), 500
+
+def update_user_preference_in_sheet(user_id, lang):
+    #modifica o actualiza los usuarios que existen en el google sheet
+    try:
+        client = get_gspread_client()
+        # Acceder al Google Sheet
+        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_EVENTS_URL')).worksheet(os.getenv('GOOGLE_USERS_SHEET_NAME2'))
+
+        data = sheet.get_all_values()
+        headers  = data[0] if data else [] #trae encabezdos
+        rows = data[1:] if len(data) > 1 else[] #trae filas
+
+        user_id_col_idx = -1
+        try:
+            user_id_col_idx = headers.index("user_id")
+        except ValueError
+            logging.info(f"Columna 'user_id' no encontrada")
+
+        found = False
+
+        for i, row in enumerate(rows):
+            if len(row) > user_id_col_idx and user_id_col_idx == user_id:
+                lang_col_idx = headers.index("language")
+                sheet.update_cell(i+2, lang_col_idx, lang)
+                logging.info(f"Preferencias de usuario actualizada para: {user_id} a {lang}")
+                found = True
+                break
+
+        if not found:
+            sheet.append_row([user_id,lang])
+            logging.info(f"Preferencias de usuario creada para: {user_id} a {lang}")
+
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+
 
 def get_user_language(user_id):
     #obtiene el idioma preferido
-    
     #logging.info(f"Buscando idioma para user_id={user_id} (tipo: {type(user_id)})")
     users = load_user_preferences_from_sheet()
     #convirtiendo el userd_id como string
@@ -120,29 +155,9 @@ def get_user_language(user_id):
     return users.get(str(user_id), {}).get("language") # sin valor por defecto
 
 
-
-def load_users():
-    #carga el idioma del usuario
-    if os.path.exists(USERS_FILE):
-        with open(USERS_FILE, 'r') as f:
-            return json.load(f)
-    return {}
-
-def save_users(users):
-    #Guarda la preferencia de idioma del usuario
-    with open(USERS_FILE, 'w') as f:
-        json.dump(users, f, indent=4)
-
-
-
 def set_user_language(user_id, lang):
     #establece el idioma preferido 
-    users = load_users()
-
-    if user_id not in users:
-        users[user_id]["language"] = lang
-        save_users(users)
-
+    update_user_preference_in_sheet(user_id,lang)
 
 
 catalogo = False
@@ -356,7 +371,7 @@ def recibir_mensajes(req):
                         else:                        
                             revision_idioma(telefono_id,mensaje,user_language)
 
-                            
+
                     
                 if "text" in messages:
                     mensaje  = messages['text']['body']
@@ -383,7 +398,7 @@ def revision_idioma(telefono_id,mensaje,user_language):
     MESSAGE_RESPONSE = ""
     
     if mensaje == "btn_es":
-        #set_user_language(telefono_id,"en")
+        set_user_language(telefono_id,"es")
         MESSAGE_RESPONSE = get_message("es", "selected_language")
 
         data = {
@@ -397,7 +412,7 @@ def revision_idioma(telefono_id,mensaje,user_language):
             }
         }
     elif mensaje == "btn_en":
-        #set_user_language(telefono_id,"es")
+        set_user_language(telefono_id,"en")
         MESSAGE_RESPONSE = get_message("en", "selected_language")
 
         data = {
