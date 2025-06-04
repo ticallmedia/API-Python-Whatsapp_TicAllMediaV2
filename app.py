@@ -391,7 +391,7 @@ def recibir_mensajes(req):
                         revision_idioma(telefono_id,mensaje,user_language)
         
         #para minimizar los reenvios automaticos del webhook se envia respuesta afirmativa de 200
-        return jsonify({'message':'EVENT_RECEIVED'})
+        return jsonify({'message':'EVENT_RECEIVED'}), 200
     except Exception as e:
         return jsonify({'message':'EVENT_RECEIVED'})
     
