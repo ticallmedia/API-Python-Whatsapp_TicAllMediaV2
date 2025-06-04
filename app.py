@@ -367,6 +367,7 @@ def recibir_mensajes(req):
                         if user_language in ["es", "en"]:
                             agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
                             exportar_eventos()
+                            mensaje_general(telefono_id,mensaje,user_language)
                             enviar_mensaje_whatsapp(telefono_id,mensaje,user_language)
                         else:                        
                             revision_idioma(telefono_id,mensaje,user_language)
@@ -399,32 +400,40 @@ def revision_idioma(telefono_id,mensaje,user_language):
     
     if mensaje == "btn_es":
         set_user_language(telefono_id,"es")
+        
+        #saludo en el idioma elegido
         MESSAGE_RESPONSE = get_message("es", "selected_language")
+        data = mensaje_general(telefono_id,MESSAGE_RESPONSE)
+        mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
 
-        data = {
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
-            "to": telefono_id,
-            "type": "text",
-            "text": {
-                "preview_url": False,
-                "body": MESSAGE_RESPONSE
-            }
-        }
+        #Imagen
+        MESSAGE_RESPONSE = get_message("es", "default_response")
+        data = mensaje_conimagen(telefono_id,MESSAGE_RESPONSE)
+        mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
+
+        #Boton
+        MESSAGE_RESPONSE = get_message("es", "greeting_text")
+        data = mensaje_conimagen(telefono_id,MESSAGE_RESPONSE)
+        mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
+
     elif mensaje == "btn_en":
         set_user_language(telefono_id,"en")
-        MESSAGE_RESPONSE = get_message("en", "selected_language")
 
-        data = {
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
-            "to": telefono_id,
-            "type": "text",
-            "text": {
-                "preview_url": False,
-                "body": MESSAGE_RESPONSE
-            }
-        }
+        #saludo en el idioma elegido    
+        MESSAGE_RESPONSE = get_message("en", "selected_language")
+        data = mensaje_general(telefono_id,MESSAGE_RESPONSE)
+        mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
+
+        #Imagen
+        MESSAGE_RESPONSE = get_message("en", "default_response")
+        data = mensaje_conimagen(telefono_id,MESSAGE_RESPONSE)
+        mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
+
+        #Boton
+        MESSAGE_RESPONSE = get_message("en", "greeting_text")
+        data = mensaje_conimagen(telefono_id,MESSAGE_RESPONSE)
+        mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
+
     else:
         if user_language in ["es", "en"]:
             MESSAGE_RESPONSE = get_message(user_language, "default_response")
@@ -489,33 +498,24 @@ def enviar_mensaje_whatsapp(telefono_id,mensaje,user_language):
     mensaje = mensaje.lower()
     MESSAGE_RESPONSE = ""
 
-    if mensaje == "hola":
+    if mensaje == "btn_si":
         #set_user_language(telefono_id,"en")
-        MESSAGE_RESPONSE = get_message(user_language, "default_response")
-
-        data= {
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
-            "to": telefono_id,
-            "type": "image",
-            "image": {
-                "link": IMA_SALUDO_URL,
-                "caption": MESSAGE_RESPONSE
-            }
-        }
+        #Respuesta saludo 
+        MESSAGE_RESPONSE = get_message(user_language, "job")
+        data = mensaje_general(telefono_id,MESSAGE_RESPONSE)
+        mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
+    
+    elif mensaje == "btn_no":
+        #set_user_language(telefono_id,"en")
+        #Respuesta saludo 
+        MESSAGE_RESPONSE = get_message(user_language, "advice")
+        data = mensaje_general(telefono_id,MESSAGE_RESPONSE)
+        mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
+    
     else:
-        MESSAGE_RESPONSE = get_message(user_language, "default_response")
-
-        data= {
-            "messaging_product": "whatsapp",
-            "recipient_type": "individual",
-            "to": telefono_id,
-            "type": "image",
-            "image": {
-                "link": IMA_SALUDO_URL,
-                "caption": MESSAGE_RESPONSE
-            }
-        }
+        #Respuesta saludo  por defecto
+        MESSAGE_RESPONSE = get_message(user_language, "advice")
+        data = mensaje_general(telefono_id,MESSAGE_RESPONSE)
 
     mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
 
@@ -533,6 +533,55 @@ def mensaje_general(telefono_id,MESSAGE_RESPONSE):
     }
     return data
 
+def mensaje_conimagen(telefono_id,MESSAGE_RESPONSE):
+        
+    data= {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": telefono_id,
+        "type": "image",
+        "image": {
+            "link": IMA_SALUDO_URL,
+            "caption": MESSAGE_RESPONSE
+        }
+    }
+    return data
+
+def mensaje_boton_si_no(telefono_id,MESSAGE_RESPONSE):
+        
+    data= {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": telefono_id,
+        "type": "interactive",
+        "interactive": {
+            "type": "button",
+            "body": {
+                "text" : MESSAGE_RESPONSE
+            },
+            "footer": {
+                "text" : "Select one of the options:"
+            },
+            "action": {
+                "buttons": [
+                    {
+                        "type" : "reply",
+                        "reply" : {
+                            "id" : "btn_si",
+                            "title": "Si"
+                        } 
+                    },{
+                        "type" : "reply",
+                        "reply" : {
+                            "id" : "btn_no",
+                            "title": "No"
+                        } 
+                    }
+                ]
+            }                
+        }
+    }
+    return data
 
 def mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente):
     agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': MESSAGE_RESPONSE, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': agente }))
