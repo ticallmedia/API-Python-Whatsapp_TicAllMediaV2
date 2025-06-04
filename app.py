@@ -61,9 +61,13 @@ with app.app_context():
 #URL de mensaje de bienvenida
 IMA_SALUDO_URL= "https://res.cloudinary.com/dioy4cydg/image/upload/v1747884690/imagen_index_wjog6p.jpg"
 
-#Diccionario de seleccioón de idioma
-USERS_FILE = 'users.json'
+agente = "Bot"
+BUTTON_TITLE_OPCION1 = ""
+BUTTON_TITLE_OPCION2 = ""
 
+
+#_______________________________________________________________________________________
+#funciones de idioma
 def load_user_preferences_from_sheet():
     #Funciona para actualiza o añade las preferencias del idioma
 
@@ -100,7 +104,7 @@ def load_user_preferences_from_sheet():
         for record in records:
             if 'user_id' in record and 'language' in record:
                 user_data[record['user_id']] = {"language": record['language']}
-        logging.info(f"Preferencias de usuario cargadas desde Google Sheets: {len(user_data)} usuarios.")
+        #logging.info(f"Preferencias de usuario cargadas desde Google Sheets: {len(user_data)} usuarios.")
         return user_data
     
     except Exception as e:
@@ -129,13 +133,13 @@ def update_user_preference_in_sheet(user_id, lang):
             if len(row) > user_id_col_idx and user_id_col_idx == user_id:
                 lang_col_idx = headers.index("language")
                 sheet.update_cell(i+2, lang_col_idx, lang)
-                logging.info(f"Preferencias de usuario actualizada para: {user_id} a {lang}")
+                #logging.info(f"Preferencias de usuario actualizada para: {user_id} a {lang}")
                 found = True
                 break
 
         if not found:
             sheet.append_row([user_id,lang])
-            logging.info(f"Preferencias de usuario creada para: {user_id} a {lang}")
+            #logging.info(f"Preferencias de usuario creada para: {user_id} a {lang}")
 
     
     except Exception as e:
@@ -159,10 +163,6 @@ def set_user_language(user_id, lang):
     #establece el idioma preferido 
     update_user_preference_in_sheet(user_id,lang)
 
-
-catalogo = False
-agente = "Bot"
-language = ""
 
 #_______________________________________________________________________________________
 #Ejecucion del Programa
@@ -399,6 +399,8 @@ def revision_idioma(telefono_id,mensaje,user_language):
     
     if mensaje == "btn_es":
         set_user_language(telefono_id,"es")
+        BUTTON_TITLE_OPCION1 = "Si"
+        BUTTON_TITLE_OPCION2 = "No"
         
         #saludo en el idioma elegido
         MESSAGE_RESPONSE = get_message("es", "selected_language")
@@ -412,11 +414,13 @@ def revision_idioma(telefono_id,mensaje,user_language):
 
         #Boton
         MESSAGE_RESPONSE = get_message("es", "greeting_text")
-        data = mensaje_boton_si_no(telefono_id,MESSAGE_RESPONSE)
+        data = mensaje_boton_si_no(telefono_id,MESSAGE_RESPONSE, BUTTON_TITLE_OPCION1,BUTTON_TITLE_OPCION2)
         mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
 
     elif mensaje == "btn_en":
         set_user_language(telefono_id,"en")
+        BUTTON_TITLE_OPCION1 = "Yes"
+        BUTTON_TITLE_OPCION2 = "No"
 
         #saludo en el idioma elegido    
         MESSAGE_RESPONSE = get_message("en", "selected_language")
@@ -430,7 +434,7 @@ def revision_idioma(telefono_id,mensaje,user_language):
 
         #Boton
         MESSAGE_RESPONSE = get_message("en", "greeting_text")
-        data = mensaje_boton_si_no(telefono_id,MESSAGE_RESPONSE)
+        data = mensaje_boton_si_no(telefono_id,MESSAGE_RESPONSE, BUTTON_TITLE_OPCION1,BUTTON_TITLE_OPCION2)
         mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
 
     else:
@@ -546,7 +550,7 @@ def mensaje_conimagen(telefono_id,MESSAGE_RESPONSE):
     }
     return data
 
-def mensaje_boton_si_no(telefono_id,MESSAGE_RESPONSE):
+def mensaje_boton_si_no(telefono_id,MESSAGE_RESPONSE, BUTTON_TITLE_OPCION1,BUTTON_TITLE_OPCION2):
         
     data= {
         "messaging_product": "whatsapp",
@@ -567,13 +571,13 @@ def mensaje_boton_si_no(telefono_id,MESSAGE_RESPONSE):
                         "type" : "reply",
                         "reply" : {
                             "id" : "btn_si",
-                            "title": "Si"
+                            "title": BUTTON_TITLE_OPCION1
                         } 
                     },{
                         "type" : "reply",
                         "reply" : {
                             "id" : "btn_no",
-                            "title": "No"
+                            "title": BUTTON_TITLE_OPCION2
                         } 
                     }
                 ]
