@@ -367,7 +367,6 @@ def recibir_mensajes(req):
                         if user_language in ["es", "en"]:
                             agregar_mensajes_log(json.dumps({'telefono_usuario_id': telefono_id, 'plataforma': 'whatsapp 📞📱💬', 'mensaje': mensaje, 'estado_usuario': 'nuevo', 'etiqueta_campana': 'Vacaciones', 'agente': 'ninguno' }))
                             exportar_eventos()
-                            mensaje_general(telefono_id,mensaje,user_language)
                             enviar_mensaje_whatsapp(telefono_id,mensaje,user_language)
                         else:                        
                             revision_idioma(telefono_id,mensaje,user_language)
