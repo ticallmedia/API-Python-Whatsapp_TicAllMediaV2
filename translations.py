@@ -17,7 +17,7 @@ MESSAGES = {
         "invalid_option": "Invalid option. Please select.",
         "default_response": "How can I help you?",
         "change_language": "Sure, which language would you like to change to?",
-        "greeting_text": "🚀 Hello! How are you? Welcome to our service.",
+        "greeting_text": "Greetings! 🤖 Intrigued by a smarter marketing strategy? At TicAll Media, we have ideas that might surprise you. Are you ready to explore? ",
         "job": "💼 What industry do you work in?", 
         "advice": "🧐You are looking for advice on a special service? "
     }
