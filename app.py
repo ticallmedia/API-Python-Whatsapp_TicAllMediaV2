@@ -120,7 +120,7 @@ def update_user_preference_in_sheet(user_id, lang):
         user_id_col_idx = -1
         try:
             user_id_col_idx = headers.index("user_id")
-        except ValueError
+        except ValueError:
             logging.info(f"Columna 'user_id' no encontrada")
 
         found = False
