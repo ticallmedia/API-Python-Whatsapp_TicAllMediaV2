@@ -412,7 +412,7 @@ def revision_idioma(telefono_id,mensaje,user_language):
 
         #Boton
         MESSAGE_RESPONSE = get_message("es", "greeting_text")
-        data = mensaje_conimagen(telefono_id,MESSAGE_RESPONSE)
+        data = mensaje_boton_si_no(telefono_id,MESSAGE_RESPONSE)
         mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
 
     elif mensaje == "btn_en":
@@ -430,7 +430,7 @@ def revision_idioma(telefono_id,mensaje,user_language):
 
         #Boton
         MESSAGE_RESPONSE = get_message("en", "greeting_text")
-        data = mensaje_conimagen(telefono_id,MESSAGE_RESPONSE)
+        data = mensaje_boton_si_no(telefono_id,MESSAGE_RESPONSE)
         mensajes_plataformas(data,telefono_id,MESSAGE_RESPONSE,agente)
 
     else:
