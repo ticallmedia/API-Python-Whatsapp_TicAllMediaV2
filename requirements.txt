@@ -6,8 +6,10 @@ click==8.2.1
 colorama==0.4.6
 dotenv==0.9.9
 Flask==3.1.1
+Flask-SQLAlchemy==3.1.1
 google-auth==2.40.3
 google-auth-oauthlib==1.2.2
+greenlet==3.2.2
 gspread==6.2.1
 httplib2==0.22.0
 idna==3.10
@@ -24,5 +26,7 @@ requests==2.32.3
 requests-oauthlib==2.0.0
 rsa==4.9.1
 six==1.17.0
+SQLAlchemy==2.0.41
+typing_extensions==4.14.0
 urllib3==2.4.0
 Werkzeug==3.1.3
