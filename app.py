@@ -9,6 +9,7 @@ import gspread
 from dotenv import load_dotenv
 from translations import get_message
 from io import StringIO # Importar StringIO para el manejo de credenciales
+import threading
 
 load_dotenv()
 #_______________________________________________________________________________________
@@ -22,6 +23,7 @@ Caracteristicas:
 -Uso de diccionario: Se crea un diccionario con las respuestas básicas en español e ingles
 -Variables de entorno: Se guarda Todas las credenciales de whatsapp y google para una 
 administración mas segura.
+-Importar threading para tareas en segundo plano
 
 """
 #_______________________________________________________________________________________
@@ -305,8 +307,12 @@ def procesar_y_responder_mensaje(telefono_id, mensaje_recibido):
         'etiqueta_campana': 'Vacaciones',
         'agente': AGENTE_BOT
     }
-    agregar_mensajes_log(json.dumps(log_data_in))
-    exportar_eventos() # Exportar después de cada registro de mensaje
+    #agregar_mensajes_log(json.dumps(log_data_in))
+    #exportar_eventos() # Exportar después de cada registro de mensaje
+
+    # Delega el registro en la DB y la exportación a Google Sheets a un hilo
+    threading.Thread(target=_agregar_mensajes_log_thread_safe, args=(json.dumps(log_data_in),)).start()
+    threading.Thread(target=_export_event_to_google_sheet_thread_safe, args=(json.dumps(log_data_in),)).start()
 
     # Lógica para seleccionar idioma
     if mensaje_procesado == "btn_es":
@@ -379,6 +385,7 @@ def send_language_selection_prompt(telefono_id):
             }
         }
     }
+    """
     # Log y envío para el mensaje interactivo de selección de idioma
     agregar_mensajes_log(json.dumps({
         'telefono_usuario_id': telefono_id,
@@ -389,6 +396,20 @@ def send_language_selection_prompt(telefono_id):
         'agente': AGENTE_BOT
     }))
     exportar_eventos()
+    """
+    log_data_out = {
+        'telefono_usuario_id': telefono_id,
+        'plataforma': 'whatsapp 📞📱💬',
+        'mensaje': message_response, # El cuerpo del mensaje interactivo
+        'estado_usuario': 'enviado',
+        'etiqueta_campana': 'Selección de Idioma',
+        'agente': AGENTE_BOT
+    }
+    
+
+    threading.Thread(target=_agregar_mensajes_log_thread_safe, args=(json.dumps(log_data_in),)).start()
+    threading.Thread(target=_export_event_to_google_sheet_thread_safe, args=(json.dumps(log_data_in),)).start()
+
     send_whatsapp_message(data)
 
 
@@ -456,8 +477,12 @@ def send_message_and_log(telefono_id, message_text, message_type='text', button_
         'etiqueta_campana': 'Respuesta Bot',
         'agente': AGENTE_BOT
     }
-    agregar_mensajes_log(json.dumps(log_data_out))
-    exportar_eventos()
+    #agregar_mensajes_log(json.dumps(log_data_out))
+    #exportar_eventos()
+
+    threading.Thread(target=_agregar_mensajes_log_thread_safe, args=(json.dumps(log_data_in),)).start()
+    threading.Thread(target=_export_event_to_google_sheet_thread_safe, args=(json.dumps(log_data_in),)).start()
+
     send_whatsapp_message(data)
 
 # --- Ejecución del Programa ---
