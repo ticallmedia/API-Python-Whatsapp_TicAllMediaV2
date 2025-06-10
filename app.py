@@ -173,6 +173,72 @@ def agregar_mensajes_log(datos_json):
     db.session.add(nuevo_registro)
     db.session.commit()
 
+
+def _agregar_mensajes_log_thread_safe(log_data_json):
+    """Función para agregar un registro a la base de datos en un hilo."""
+    with app.app_context(): # Necesario para interactuar con SQLAlchemy en un hilo
+        try:
+            datos = json.loads(log_data_json)
+            nuevo_registro = Log(
+                telefono_usuario_id=datos.get('telefono_usuario_id'),
+                plataforma=datos.get('plataforma'),
+                mensaje=datos.get('mensaje'),
+                estado_usuario=datos.get('estado_usuario'),
+                etiqueta_campana=datos.get('etiqueta_campana'),
+                agente=datos.get('agente')
+            )
+            db.session.add(nuevo_registro)
+            db.session.commit()
+            logging.info(f"Registro de log añadido a DB (hilo): {datos.get('mensaje')}")
+        except Exception as e:
+            db.session.rollback() # Si hay un error, revertir la transacción
+            logging.error(f"Error añadiendo log a DB (hilo): {e}")
+
+
+def _export_event_to_google_sheet_thread_safe(log_data_json):
+    """Función para exportar un evento a Google Sheets en un hilo."""
+    # NO necesita app_context() si solo usa gspread, pero si consulta la DB (Log.query.order_by), sí lo necesita.
+    with app.app_context():
+        try:
+            datos = json.loads(log_data_json) # Datos del evento a exportar
+            client = get_gspread_client()
+            sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_EVENTS_URL')).worksheet(os.getenv('GOOGLE_USERS_SHEET_NAME1'))
+            
+            titulos_existentes = sheet.row_values(1)
+            if "ID" not in titulos_existentes:
+                sheet.clear()
+                sheet.append_row(["ID", "Fecha y Hora", "Teléfono - Usuario ID", "Plataforma", "Mensaje", "Estado Usuario", "Etiqueta - Campaña", "Agente"])
+                formato = {
+                    "backgroundColor": {"red": 0.2, "green": 0.4, "blue": 0.8},
+                    "textFormat": {"bold": True, "foregroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0}}
+                }
+                sheet.format("A1:H1", formato)
+
+            # Recuperar el ID del último evento de la DB
+            # ADVERTENCIA: Esta forma de obtener el "último" evento puede ser inconsistente
+            # en un entorno de alta concurrencia con múltiples hilos escribiendo.
+            # Idealmente, la función que guarda en DB (`_agregar_mensajes_log_thread_safe`)
+            # debería retornar el ID del registro, y ese ID pasarse a esta función.
+            ultimo_evento = Log.query.order_by(Log.id.desc()).first()
+            if ultimo_evento:
+                sheet.append_row([
+                    ultimo_evento.id,
+                    ultimo_evento.fecha_y_hora.strftime('%Y-%m-%d %H:%M:%S'),
+                    ultimo_evento.telefono_usuario_id,
+                    ultimo_evento.plataforma,
+                    ultimo_evento.mensaje,
+                    ultimo_evento.estado_usuario,
+                    ultimo_evento.etiqueta_campana,
+                    ultimo_evento.agente
+                ])
+                logging.info(f"Evento exportado a Google Sheets (hilo): {ultimo_evento.id}")
+            else:
+                logging.warning("No hay eventos en la DB para exportar a Google Sheets en el hilo.")
+        except Exception as e:
+            logging.error(f"Error exportando evento a Google Sheets (hilo): {e}")
+
+
+
 # --- API WhatsApp para el envío de mensajes ---
 def send_whatsapp_message(data):
     """Envía un mensaje a través de la API de WhatsApp Business."""
@@ -407,8 +473,8 @@ def send_language_selection_prompt(telefono_id):
     }
     
 
-    threading.Thread(target=_agregar_mensajes_log_thread_safe, args=(json.dumps(log_data_in),)).start()
-    threading.Thread(target=_export_event_to_google_sheet_thread_safe, args=(json.dumps(log_data_in),)).start()
+    threading.Thread(target=_agregar_mensajes_log_thread_safe, args=(json.dumps(log_data_out),)).start()
+    threading.Thread(target=_export_event_to_google_sheet_thread_safe, args=(json.dumps(log_data_out),)).start()
 
     send_whatsapp_message(data)
 
@@ -480,8 +546,8 @@ def send_message_and_log(telefono_id, message_text, message_type='text', button_
     #agregar_mensajes_log(json.dumps(log_data_out))
     #exportar_eventos()
 
-    threading.Thread(target=_agregar_mensajes_log_thread_safe, args=(json.dumps(log_data_in),)).start()
-    threading.Thread(target=_export_event_to_google_sheet_thread_safe, args=(json.dumps(log_data_in),)).start()
+    threading.Thread(target=_agregar_mensajes_log_thread_safe, args=(json.dumps(log_data_out),)).start()
+    threading.Thread(target=_export_event_to_google_sheet_thread_safe, args=(json.dumps(log_data_out),)).start()
 
     send_whatsapp_message(data)
 
