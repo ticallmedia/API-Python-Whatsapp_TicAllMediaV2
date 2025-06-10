@@ -383,11 +383,11 @@ def procesar_y_responder_mensaje(telefono_id, mensaje_recibido):
 
     # Lógica para seleccionar idioma
     if mensaje_procesado == "btn_es":
-        set_user_language(telefono_id, "es")
+        #set_user_language(telefono_id, "es")
         user_language = "es"
         send_initial_messages(telefono_id, user_language)
     elif mensaje_procesado == "btn_en":
-        set_user_language(telefono_id, "en")
+        #set_user_language(telefono_id, "en")
         user_language = "en"
         send_initial_messages(telefono_id, user_language)
     elif user_language in ["es", "en"]: # Si ya tiene idioma, procesar el mensaje normal
@@ -415,6 +415,10 @@ def send_initial_messages(telefono_id, lang):
                          button_ids=['btn_si', 'btn_no'])
 
 def enviar_respuesta_interactiva(telefono_id, mensaje_procesado, user_language):
+
+    #PRUEBA EN ESPAÑOL
+    user_language = "es"
+
     """Gestiona las respuestas interactivas basadas en los botones Si/No."""
     message_response = ""
     if mensaje_procesado == "btn_si":
