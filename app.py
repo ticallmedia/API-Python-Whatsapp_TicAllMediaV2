@@ -231,6 +231,7 @@ def send_initial_messages(telefono_id, lang):
     message_response = get_message(lang, "default_response") # Quizás 'greeting_image_caption' sea más apropiado aquí
     send_message_and_log(telefono_id, message_response, 'image')
 
+"""
     # Botones Si/No
     button_title_opcion1 = get_message(lang, "button_yes")
     button_title_opcion2 = get_message(lang, "button_no")
@@ -238,6 +239,8 @@ def send_initial_messages(telefono_id, lang):
     send_message_and_log(telefono_id, message_response, 'button', 
                          button_titles=[button_title_opcion1, button_title_opcion2],
                          button_ids=['btn_si', 'btn_no'])
+
+    """
 
 def enviar_respuesta_interactiva(telefono_id, mensaje_procesado, user_language):
 
