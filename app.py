@@ -218,10 +218,10 @@ def procesar_y_responder_mensaje(telefono_id, mensaje_recibido):
     elif user_language in ["es", "en"]: # Si ya tiene idioma, procesar el mensaje normal
         enviar_respuesta_interactiva(telefono_id, mensaje_procesado, user_language)
     elif mensaje_procesado == "btn_si1":
-        #user_language = "es"
+        user_language = "es"
         enviar_preguntas_interactiva(telefono_id, mensaje_procesado, user_language)
     elif mensaje_procesado == "btn_talvez1":
-        #user_language = "es"
+        user_language = "es"
         enviar_preguntas_interactiva(telefono_id, mensaje_procesado, user_language)
     else: # Si no tiene idioma, pedirle que lo seleccione
         send_language_selection_prompt(telefono_id)
