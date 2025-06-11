@@ -209,28 +209,25 @@ def procesar_y_responder_mensaje(telefono_id, mensaje_recibido):
     threading.Thread(target=_agregar_mensajes_log_thread_safe, args=(json.dumps(log_data_in),)).start()
 
     # Lógica para seleccionar idioma
-    if mensaje_procesado == "btn_es":
+    if mensaje_procesado =="hola" or mensaje_procesado =="hi" or mensaje_procesado =="start" :
         user_language = "es"
         send_initial_messages(telefono_id, user_language)
-    elif mensaje_procesado == "btn_en":
-        user_language = "en"
-        send_initial_messages(telefono_id, user_language)
-    elif user_language in ["es", "en"]: # Si ya tiene idioma, procesar el mensaje normal
-        enviar_respuesta_interactiva(telefono_id, mensaje_procesado, user_language)
     elif mensaje_procesado == "btn_si1":
         user_language = "es"
-        enviar_preguntas_interactiva(telefono_id, mensaje_procesado, user_language)
-    elif mensaje_procesado == "btn_talvez1":
-        user_language = "es"
-        enviar_preguntas_interactiva(telefono_id, mensaje_procesado, user_language)
+        enviar_respuesta_interactiva(telefono_id, mensaje_procesado, user_language)
+    elif mensaje_procesado == "btn_no1":
+        user_language = "en"
+        enviar_respuesta_interactiva(telefono_id, mensaje_procesado, user_language)
     else: # Si no tiene idioma, pedirle que lo seleccione
-        send_language_selection_prompt(telefono_id)
+        user_language = "es"
+        send_initial_messages(telefono_id, user_language)
+
 
 
 def send_initial_messages(telefono_id, lang):
     """Envía los mensajes iniciales (bienvenida, imagen, botones Si/No) después de seleccionar idioma."""
     # Saludo en el idioma elegido
-    message_response = get_message(lang, "selected_language")
+    message_response = get_message(lang, "welcome_initial")
     send_message_and_log(telefono_id, message_response, 'text')
 
     # Imagen
@@ -240,10 +237,10 @@ def send_initial_messages(telefono_id, lang):
     #Botones pregunta1
     if lang == "es":
         si = "Si"
-        talvez = "Tal vez"
+        no = "Tal vez"
     else:
         si = "Yes"
-        talvez = "Maybe"
+        no = "Maybe"
 
     message_response = get_message(lang, "greeting_text")
     data = {
@@ -258,97 +255,27 @@ def send_initial_messages(telefono_id, lang):
             "action": {
                 "buttons": [
                     {"type": "reply", "reply": {"id": "btn_si1", "title": si}},
-                    {"type": "reply", "reply": {"id": "btn_talvez1", "title": talvez}}
+                    {"type": "reply", "reply": {"id": "btn_no1", "title": no}}
                 ]
             }
         }
     }
 
-"""
-    # Botones Si/No
-    button_title_opcion1 = get_message(lang, "button_yes")
-    button_title_opcion2 = get_message(lang, "button_no")
-    message_response = get_message(lang, "greeting_text")
-    send_message_and_log(telefono_id, message_response, 'button', 
-                         button_titles=[button_title_opcion1, button_title_opcion2],
-                         button_ids=['btn_si', 'btn_no'])
-
-    """
 
 def enviar_respuesta_interactiva(telefono_id, mensaje_procesado, user_language):
-
-    #PRUEBA EN ESPAÑOL
-    user_language = "es"
-
-    """Gestiona las respuestas interactivas basadas en los botones Si/No."""
-    message_response = ""
-    if mensaje_procesado == "btn_si":
-        message_response = get_message(user_language, "job")
-    elif mensaje_procesado == "btn_no":
-        message_response = get_message(user_language, "advice")
-    else: # Cualquier otro mensaje de texto cuando el idioma ya está establecido
-        message_response = get_message(user_language, "default_response")
-    
-    send_message_and_log(telefono_id, message_response, 'text')
-
-
-def send_language_selection_prompt(telefono_id):
-    """Envía el mensaje de bienvenida inicial y los botones de selección de idioma."""
-    # Mensaje de bienvenida inicial
-    message_response = get_message("es", "welcome_initial")
-    send_message_and_log(telefono_id, message_response, 'text')
-
-    # Botones para seleccionar idioma
-    message_response = get_message("es", "lang_prompt")
-    data = {
-        "messaging_product": "whatsapp",
-        "recipient_type": "individual",
-        "to": telefono_id,
-        "type": "interactive",
-        "interactive": {
-            "type": "button",
-            "body": {"text": message_response},
-            "footer": {"text": "Select one of the options:"},
-            "action": {
-                "buttons": [
-                    {"type": "reply", "reply": {"id": "btn_es", "title": "Español"}},
-                    {"type": "reply", "reply": {"id": "btn_en", "title": "English"}}
-                ]
-            }
-        }
-    }
-
-    log_data_out = {
-        'telefono_usuario_id': telefono_id,
-        'plataforma': 'whatsapp 📞📱💬',
-        'mensaje': message_response, # El cuerpo del mensaje interactivo
-        'estado_usuario': 'enviado',
-        'etiqueta_campana': 'Selección de Idioma',
-        'agente': AGENTE_BOT
-    }
-    
-
-    threading.Thread(target=_agregar_mensajes_log_thread_safe, args=(json.dumps(log_data_out),)).start()
-
-    send_whatsapp_message(data)
-
-
-def enviar_preguntas_interactiva(telefono_id, mensaje_procesado, user_language):
-
-    #user_language = "es"
 
     """Gestiona las respuestas interactivas basadas en los botones Si/No."""
     message_response = ""
     if mensaje_procesado == "btn_si1":
         message_response = get_message(user_language, "job")
-    elif mensaje_procesado == "btn_talvez1":
+    elif mensaje_procesado == "btn_no1":
         message_response = get_message(user_language, "advice")
     else: # Cualquier otro mensaje de texto cuando el idioma ya está establecido
         message_response = get_message(user_language, "default_response")
     
     send_message_and_log(telefono_id, message_response, 'text')
 
-    
+
 def send_message_and_log(telefono_id, message_text, message_type='text', button_titles=None, button_ids=None):
     """
     Construye y envía un mensaje de WhatsApp, y registra la interacción.
