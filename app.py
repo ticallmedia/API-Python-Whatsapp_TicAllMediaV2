@@ -4,8 +4,6 @@ from datetime import datetime
 import http.client
 import logging
 import os
-from oauth2client.service_account import ServiceAccountCredentials
-import gspread
 from dotenv import load_dotenv
 from translations import get_message
 from io import StringIO # Importar StringIO para el manejo de credenciales
@@ -24,6 +22,13 @@ Caracteristicas:
 -Variables de entorno: Se guarda Todas las credenciales de whatsapp y google para una 
 administración mas segura.
 -Importar threading para tareas en segundo plano
+#_______________________________________________________________________________________
+
+Cambios:
+-Debido a que apesar de alimentar el google sheet asincronicamente, empeoro la duplicidad 
+de los mensajes, no se realizara copia en google.
+-Se eliminaran el codgio de consulta de idioma y solo se utilizara uno
+-El código solo permanecera en su forma mas básica
 
 
 """
@@ -58,99 +63,6 @@ with app.app_context():
 IMA_SALUDO_URL = "https://res.cloudinary.com/dioy4cydg/image/upload/v1747884690/imagen_index_wjog6p.jpg"
 AGENTE_BOT = "Bot" # Usamos una constante para el agente
 
-# --- Funciones de Idioma ---
-def get_gspread_client():
-    """Autentica y devuelve el cliente gspread."""
-    creds_dict = get_google_credentials_from_env()
-    scope = [
-        "https://spreadsheets.google.com/feeds",
-        "https://www.googleapis.com/auth/drive",
-    ]
-    json_creds = json.dumps(creds_dict)
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(json_creds), scope)
-    client = gspread.authorize(creds)
-    return client
-
-def get_google_credentials_from_env():
-    """Obtiene las credenciales de Google desde las variables de entorno."""
-    creds_dict = {
-        "type": os.environ["GOOGLE_TYPE"],
-        "project_id": os.environ["GOOGLE_PROJECT_ID"],
-        "private_key_id": os.environ["GOOGLE_PRIVATE_KEY_ID"],
-        "private_key": os.environ["GOOGLE_PRIVATE_KEY"].replace("\\n", "\n"),
-        "client_email": os.environ["GOOGLE_CLIENT_EMAIL"],
-        "client_id": os.environ["GOOGLE_CLIENT_ID"],
-        "auth_uri": os.environ["GOOGLE_AUTH_URI"],
-        "token_uri": os.environ["GOOGLE_TOKEN_URI"],
-        "auth_provider_x509_cert_url": os.environ["GOOGLE_AUTH_PROVIDER_CERT_URL"],
-        "client_x509_cert_url": os.environ["GOOGLE_CLIENT_CERT_URL"]
-    }
-    return creds_dict
-
-def load_user_preferences_from_sheet():
-    """Carga o inicializa las preferencias de idioma de los usuarios desde Google Sheet."""
-    try:
-        user_data = {}
-        client = get_gspread_client()
-        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_EVENTS_URL')).worksheet(os.getenv('GOOGLE_USERS_SHEET_NAME2'))
-
-        if not sheet.col_values(1): # Si la primera columna está vacía, añade los encabezados
-            sheet.append_row(["user_id", "language"])
-            # Formato de encabezado
-            formato = {
-                "backgroundColor": {"red": 0.2, "green": 0.4, "blue": 0.8},
-                "textFormat": {"bold": True, "foregroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0}}
-            }
-            sheet.format("A1:B1", formato)
-
-        records = sheet.get_all_records()
-        for record in records:
-            if 'user_id' in record and 'language' in record:
-                user_data[str(record['user_id'])] = {"language": record['language']} # Aseguramos que user_id sea string
-        return user_data
-
-    except Exception as e:
-        logging.error(f"Error cargando preferencias de usuario desde Google Sheets: {e}")
-        return {} # Retorna un diccionario vacío en caso de error
-
-def update_user_preference_in_sheet(user_id, lang):
-    """Modifica o añade las preferencias de idioma de un usuario en Google Sheet."""
-    try:
-        client = get_gspread_client()
-        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_EVENTS_URL')).worksheet(os.getenv('GOOGLE_USERS_SHEET_NAME2'))
-
-        data = sheet.get_all_values()
-        headers = data[0] if data else []
-        rows = data[1:] if len(data) > 1 else []
-
-        try:
-            user_id_col_idx = headers.index("user_id")
-            lang_col_idx = headers.index("language")
-        except ValueError:
-            logging.error("Columnas 'user_id' o 'language' no encontradas en la hoja de Google Sheets.")
-            return
-
-        found = False
-        for i, row in enumerate(rows):
-            if len(row) > user_id_col_idx and str(row[user_id_col_idx]) == str(user_id): # Convertir a string para comparación
-                sheet.update_cell(i + 2, lang_col_idx + 1, lang) # +1 porque gspread es 1-based index
-                found = True
-                break
-
-        if not found:
-            sheet.append_row([user_id, lang])
-        
-    except Exception as e:
-        logging.error(f"Error actualizando preferencias de usuario en Google Sheets: {e}")
-
-def get_user_language(user_id):
-    """Obtiene el idioma preferido de un usuario."""
-    users = load_user_preferences_from_sheet()
-    return users.get(str(user_id), {}).get("language") # Sin valor por defecto aquí, se maneja en revision_idioma
-
-def set_user_language(user_id, lang):
-    """Establece el idioma preferido de un usuario."""
-    update_user_preference_in_sheet(user_id, lang)
 #_______________________________________________________________________________________
 # --- Funciones de la Aplicación Flask ---
 @app.route('/')
@@ -196,50 +108,6 @@ def _agregar_mensajes_log_thread_safe(log_data_json):
             logging.error(f"Error añadiendo log a DB (hilo): {e}")
 
 
-def _export_event_to_google_sheet_thread_safe(log_data_json):
-    """Función para exportar un evento a Google Sheets en un hilo."""
-    # NO necesita app_context() si solo usa gspread, pero si consulta la DB (Log.query.order_by), sí lo necesita.
-    with app.app_context():
-        try:
-            datos = json.loads(log_data_json) # Datos del evento a exportar
-            client = get_gspread_client()
-            sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_EVENTS_URL')).worksheet(os.getenv('GOOGLE_USERS_SHEET_NAME1'))
-            
-            titulos_existentes = sheet.row_values(1)
-            if "ID" not in titulos_existentes:
-                sheet.clear()
-                sheet.append_row(["ID", "Fecha y Hora", "Teléfono - Usuario ID", "Plataforma", "Mensaje", "Estado Usuario", "Etiqueta - Campaña", "Agente"])
-                formato = {
-                    "backgroundColor": {"red": 0.2, "green": 0.4, "blue": 0.8},
-                    "textFormat": {"bold": True, "foregroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0}}
-                }
-                sheet.format("A1:H1", formato)
-
-            # Recuperar el ID del último evento de la DB
-            # ADVERTENCIA: Esta forma de obtener el "último" evento puede ser inconsistente
-            # en un entorno de alta concurrencia con múltiples hilos escribiendo.
-            # Idealmente, la función que guarda en DB (`_agregar_mensajes_log_thread_safe`)
-            # debería retornar el ID del registro, y ese ID pasarse a esta función.
-            ultimo_evento = Log.query.order_by(Log.id.desc()).first()
-            if ultimo_evento:
-                sheet.append_row([
-                    ultimo_evento.id,
-                    ultimo_evento.fecha_y_hora.strftime('%Y-%m-%d %H:%M:%S'),
-                    ultimo_evento.telefono_usuario_id,
-                    ultimo_evento.plataforma,
-                    ultimo_evento.mensaje,
-                    ultimo_evento.estado_usuario,
-                    ultimo_evento.etiqueta_campana,
-                    ultimo_evento.agente
-                ])
-                logging.info(f"Evento exportado a Google Sheets (hilo): {ultimo_evento.id}")
-            else:
-                logging.warning("No hay eventos en la DB para exportar a Google Sheets en el hilo.")
-        except Exception as e:
-            logging.error(f"Error exportando evento a Google Sheets (hilo): {e}")
-
-
-
 # --- API WhatsApp para el envío de mensajes ---
 def send_whatsapp_message(data):
     """Envía un mensaje a través de la API de WhatsApp Business."""
@@ -260,45 +128,6 @@ def send_whatsapp_message(data):
     finally:
         connection.close()
 
-# --- API de Google Sheet para exportar información ---
-def exportar_eventos():
-    """Exporta los eventos de la base de datos a Google Sheets."""
-    try:
-        eventos = Log.query.all()
-        client = get_gspread_client()
-        sheet = client.open_by_url(os.getenv('GOOGLE_SHEET_EVENTS_URL')).worksheet(os.getenv('GOOGLE_USERS_SHEET_NAME1'))
-        
-        # Buscar el encabezado 'ID' para determinar si la hoja necesita inicialización
-        titulos_existentes = sheet.row_values(1) # Obtener la primera fila (encabezados)
-        
-        if "ID" not in titulos_existentes:
-            sheet.clear()
-            sheet.append_row(["ID", "Fecha y Hora", "Teléfono - Usuario ID", "Plataforma", "Mensaje", "Estado Usuario", "Etiqueta - Campaña", "Agente"])
-            formato = {
-                "backgroundColor": {"red": 0.2, "green": 0.4, "blue": 0.8},
-                "textFormat": {"bold": True, "foregroundColor": {"red": 1.0, "green": 1.0, "blue": 1.0}}
-            }
-            sheet.format("A1:H1", formato)
-
-        # Solo agregar el último evento si existe
-        if eventos:
-            ultimo_evento = eventos[-1]
-            sheet.append_row([
-                ultimo_evento.id,
-                ultimo_evento.fecha_y_hora.strftime('%Y-%m-%d %H:%M:%S'),
-                ultimo_evento.telefono_usuario_id,
-                ultimo_evento.plataforma,
-                ultimo_evento.mensaje,
-                ultimo_evento.estado_usuario,
-                ultimo_evento.etiqueta_campana,
-                ultimo_evento.agente
-            ])
-        
-        return jsonify({'message': 'Eventos exportados exitosamente a Google Sheets'}), 200
-
-    except Exception as e:
-        logging.error(f"Error exportando eventos a Google Sheets: {e}")
-        return jsonify({'error': str(e)}), 500
 #_______________________________________________________________________________________
 # --- Uso del Token y recepción de mensajes ---
 TOKEN_CODE = os.getenv('META_WHATSAPP_TOKEN_CODE')
@@ -363,7 +192,7 @@ def procesar_y_responder_mensaje(telefono_id, mensaje_recibido):
     Registra el mensaje entrante y la respuesta en la base de datos y Google Sheets.
     """
     mensaje_procesado = mensaje_recibido.lower()
-    user_language = get_user_language(telefono_id)
+    user_language = "es"
     
     # Primero, registra el mensaje entrante
     log_data_in = {
@@ -379,15 +208,12 @@ def procesar_y_responder_mensaje(telefono_id, mensaje_recibido):
 
     # Delega el registro en la DB y la exportación a Google Sheets a un hilo
     threading.Thread(target=_agregar_mensajes_log_thread_safe, args=(json.dumps(log_data_in),)).start()
-    threading.Thread(target=_export_event_to_google_sheet_thread_safe, args=(json.dumps(log_data_in),)).start()
 
     # Lógica para seleccionar idioma
     if mensaje_procesado == "btn_es":
-        #set_user_language(telefono_id, "es")
         user_language = "es"
         send_initial_messages(telefono_id, user_language)
     elif mensaje_procesado == "btn_en":
-        #set_user_language(telefono_id, "en")
         user_language = "en"
         send_initial_messages(telefono_id, user_language)
     elif user_language in ["es", "en"]: # Si ya tiene idioma, procesar el mensaje normal
@@ -456,18 +282,7 @@ def send_language_selection_prompt(telefono_id):
             }
         }
     }
-    """
-    # Log y envío para el mensaje interactivo de selección de idioma
-    agregar_mensajes_log(json.dumps({
-        'telefono_usuario_id': telefono_id,
-        'plataforma': 'whatsapp 📞📱💬',
-        'mensaje': message_response, # El cuerpo del mensaje interactivo
-        'estado_usuario': 'enviado',
-        'etiqueta_campana': 'Selección de Idioma',
-        'agente': AGENTE_BOT
-    }))
-    exportar_eventos()
-    """
+
     log_data_out = {
         'telefono_usuario_id': telefono_id,
         'plataforma': 'whatsapp 📞📱💬',
@@ -479,7 +294,6 @@ def send_language_selection_prompt(telefono_id):
     
 
     threading.Thread(target=_agregar_mensajes_log_thread_safe, args=(json.dumps(log_data_out),)).start()
-    threading.Thread(target=_export_event_to_google_sheet_thread_safe, args=(json.dumps(log_data_out),)).start()
 
     send_whatsapp_message(data)
 
@@ -552,7 +366,6 @@ def send_message_and_log(telefono_id, message_text, message_type='text', button_
     #exportar_eventos()
 
     threading.Thread(target=_agregar_mensajes_log_thread_safe, args=(json.dumps(log_data_out),)).start()
-    threading.Thread(target=_export_event_to_google_sheet_thread_safe, args=(json.dumps(log_data_out),)).start()
 
     send_whatsapp_message(data)
 
