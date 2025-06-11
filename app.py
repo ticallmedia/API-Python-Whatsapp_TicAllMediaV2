@@ -235,32 +235,27 @@ def send_initial_messages(telefono_id, lang):
     send_message_and_log(telefono_id, message_response, 'image')
 
     #Botones pregunta1
+    # Definimos los títulos de los botones según el idioma
     if lang == "es":
-        si = "Si"
-        no = "Tal vez"
+        si_title = "Si"
+        no_title = "Tal vez"
     else:
-        si = "Yes"
-        no = "Maybe"
+        si_title = "Yes"
+        no_title = "Maybe"
+    
+    # Definimos los IDs de los botones (estos no cambian con el idioma)
+    si_id = "btn_si1"
+    no_id = "btn_no1"
 
-    message_response = get_message(lang, "greeting_text")
-    data = {
-        "messaging_product": "whatsapp",
-        "recipient_type": "individual",
-        "to": telefono_id,
-        "type": "interactive",
-        "interactive": {
-            "type": "button",
-            "body": {"text": message_response},
-            "footer": {"text": "Select one of the options:"},
-            "action": {
-                "buttons": [
-                    {"type": "reply", "reply": {"id": "btn_si1", "title": si}},
-                    {"type": "reply", "reply": {"id": "btn_no1", "title": no}}
-                ]
-            }
-        }
-    }
-
+    message_response_for_buttons = get_message(lang, "greeting_text")
+    
+    send_message_and_log(
+        telefono_id, 
+        message_response_for_buttons, 
+        'button', 
+        button_titles=[si_title, no_title], # Pasamos los títulos que varían por idioma
+        button_ids=[si_id, no_id]           # Pasamos los IDs fijos
+    )
 
 def enviar_respuesta_interactiva(telefono_id, mensaje_procesado, user_language):
 
