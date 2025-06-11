@@ -216,7 +216,7 @@ def procesar_y_responder_mensaje(telefono_id, mensaje_recibido):
         user_language = "es"
         enviar_respuesta_interactiva(telefono_id, mensaje_procesado, user_language)
     elif mensaje_procesado == "btn_no1":
-        user_language = "en"
+        user_language = "es"
         enviar_respuesta_interactiva(telefono_id, mensaje_procesado, user_language)
     else: # Si no tiene idioma, pedirle que lo seleccione
         user_language = "es"
@@ -231,7 +231,7 @@ def send_initial_messages(telefono_id, lang):
     send_message_and_log(telefono_id, message_response, 'text')
 
     # Imagen
-    message_response = get_message(lang, "default_response") # Quizás 'greeting_image_caption' sea más apropiado aquí
+    message_response = get_message(lang, "greeting_text1") # Quizás 'greeting_image_caption' sea más apropiado aquí
     send_message_and_log(telefono_id, message_response, 'image')
 
     #Botones pregunta1
@@ -247,7 +247,7 @@ def send_initial_messages(telefono_id, lang):
     si_id = "btn_si1"
     no_id = "btn_no1"
 
-    message_response_for_buttons = get_message(lang, "greeting_text")
+    message_response_for_buttons = get_message(lang, "greeting_text2")
     
     send_message_and_log(
         telefono_id, 
