@@ -30,7 +30,6 @@ de los mensajes, no se realizara copia en google.
 -Se eliminaran el codgio de consulta de idioma y solo se utilizara uno
 -El código solo permanecera en su forma mas básica
 
-
 """
 #_______________________________________________________________________________________
 app = Flask(__name__)
@@ -192,7 +191,7 @@ def procesar_y_responder_mensaje(telefono_id, mensaje_recibido):
     Registra el mensaje entrante y la respuesta en la base de datos y Google Sheets.
     """
     mensaje_procesado = mensaje_recibido.lower()
-    user_language = "es"
+    user_language = ""
     
     # Primero, registra el mensaje entrante
     log_data_in = {
@@ -260,11 +259,11 @@ def enviar_respuesta_interactiva(telefono_id, mensaje_procesado, user_language):
 def send_language_selection_prompt(telefono_id):
     """Envía el mensaje de bienvenida inicial y los botones de selección de idioma."""
     # Mensaje de bienvenida inicial
-    message_response = get_message("en", "welcome_initial")
+    message_response = get_message("es", "welcome_initial")
     send_message_and_log(telefono_id, message_response, 'text')
 
     # Botones para seleccionar idioma
-    message_response = get_message("en", "lang_prompt")
+    message_response = get_message("es", "lang_prompt")
     data = {
         "messaging_product": "whatsapp",
         "recipient_type": "individual",
