@@ -217,6 +217,12 @@ def procesar_y_responder_mensaje(telefono_id, mensaje_recibido):
         send_initial_messages(telefono_id, user_language)
     elif user_language in ["es", "en"]: # Si ya tiene idioma, procesar el mensaje normal
         enviar_respuesta_interactiva(telefono_id, mensaje_procesado, user_language)
+    elif mensaje_procesado == "btn_si1":
+        #user_language = "es"
+        enviar_preguntas_interactiva(telefono_id, mensaje_procesado, user_language)
+    elif mensaje_procesado == "btn_talvez1":
+        #user_language = "es"
+        enviar_preguntas_interactiva(telefono_id, mensaje_procesado, user_language)
     else: # Si no tiene idioma, pedirle que lo seleccione
         send_language_selection_prompt(telefono_id)
 
@@ -230,6 +236,33 @@ def send_initial_messages(telefono_id, lang):
     # Imagen
     message_response = get_message(lang, "default_response") # Quizás 'greeting_image_caption' sea más apropiado aquí
     send_message_and_log(telefono_id, message_response, 'image')
+
+    #Botones pregunta1
+    if lang == "es":
+        si = "Si"
+        talvez = "Tal vez"
+    else:
+        si = "Yes"
+        talvez = "Maybe"
+
+    message_response = get_message(lang, "greeting_text")
+    data = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": telefono_id,
+        "type": "interactive",
+        "interactive": {
+            "type": "button",
+            "body": {"text": message_response},
+            "footer": {"text": "Select one of the options:"},
+            "action": {
+                "buttons": [
+                    {"type": "reply", "reply": {"id": "btn_si1", "title": si}},
+                    {"type": "reply", "reply": {"id": "btn_talvez1", "title": talvez}}
+                ]
+            }
+        }
+    }
 
 """
     # Botones Si/No
@@ -300,6 +333,22 @@ def send_language_selection_prompt(telefono_id):
     send_whatsapp_message(data)
 
 
+def enviar_preguntas_interactiva(telefono_id, mensaje_procesado, user_language):
+
+    #user_language = "es"
+
+    """Gestiona las respuestas interactivas basadas en los botones Si/No."""
+    message_response = ""
+    if mensaje_procesado == "btn_si1":
+        message_response = get_message(user_language, "job")
+    elif mensaje_procesado == "btn_talvez1":
+        message_response = get_message(user_language, "advice")
+    else: # Cualquier otro mensaje de texto cuando el idioma ya está establecido
+        message_response = get_message(user_language, "default_response")
+    
+    send_message_and_log(telefono_id, message_response, 'text')
+
+    
 def send_message_and_log(telefono_id, message_text, message_type='text', button_titles=None, button_ids=None):
     """
     Construye y envía un mensaje de WhatsApp, y registra la interacción.
