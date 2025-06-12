@@ -271,6 +271,7 @@ def question1_messages(telefono_id, lang):
     message_response = get_message(lang, "advice1") # Quizás 'greeting_image_caption' sea más apropiado aquí
     send_message_and_log(telefono_id, message_response, 'text')
 
+"""
     #Botones pregunta1
     # Definimos los títulos de los botones según el idioma
     if lang == "es":
@@ -293,6 +294,7 @@ def question1_messages(telefono_id, lang):
         button_titles=[si_title, no_title], # Pasamos los títulos que varían por idioma
         button_ids=[si_id, no_id]           # Pasamos los IDs fijos
     )
+"""
 
 def request1_messages(telefono_id, lang):
     """Envía los mensajes iniciales (bienvenida, imagen, botones Si/No) después de seleccionar idioma."""
