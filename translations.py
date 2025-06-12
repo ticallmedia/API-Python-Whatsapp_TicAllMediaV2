@@ -13,9 +13,10 @@ MESSAGES = {
         "advice1": "Tenemos experiencia en este mercado, ¿te gustaría agendar una cita con TicAll Media? 🗓️",
         "advice2": "🧐¿Buscas asesoría sobre algún servicio especial? ",
         "portfolio": "🚀 Hola, ¿buscas asesoría sobre algún servicio especial?\n\n📌 Por favor, ingresa un número #️⃣ para recibir información.\n\n1️⃣. DDA And Mobile Campaigns. 📱\n2️⃣. WebSites. 🌐\n3️⃣. Photography. 📸\n4️⃣. Content Marketing. ✍️\n5️⃣. Media Strategy. 📈\n6️⃣. Digital Marketing. 💻\n7️⃣. Paid Social Media. 📊\n8️⃣. Ecommerce Strategy. 🛒\n9️⃣. Display Media Planning. 📺\n0️⃣. Hablar con un Agente. 🗣️",
-        "schedule": "¡Perfecto! 😊 \n\\n Selecciona el día y la hora que más te convenga en el siguiente enlace. Nos reuniremos y haremos un diagnóstico gratuito de tu negocio para identificar estrategias de mejora en tus activos y en tu marketing.",
+        "schedule": "¡Perfecto! 😊 \n\n Selecciona el día y la hora que más te convenga en el siguiente enlace. Nos reuniremos y haremos un diagnóstico gratuito de tu negocio para identificar estrategias de mejora en tus activos y en tu marketing.",
         "calendar": "👉 [Haz clic aquí para agendar tu cita](https://tucalendario.com/nombre)",
-        "farewell": "¡Estupendo! La inteligencia en marketing te espera. Te veremos pronto, We will grow together!"
+        "wait": "Gracias por esperar. Un agente te atenderá en breve. 🙋‍♂️",
+        "farewell": "🚀 ¡Estupendo! La inteligencia en marketing te espera. Te veremos pronto, We will grow together!"
 
 
     },
@@ -33,9 +34,10 @@ MESSAGES = {
     "advice1": "We have experience in this market. Would you like to schedule an appointment with TicAll Media? 🗓️",
     "advice2": "🧐 Looking for advice on a special service?",
     "portfolio": "🚀 Hi, are you looking for advice on a special service?\n\n📌 Please enter a number #️⃣ to receive information.\n\n1️⃣. DDA And Mobile Campaigns. 📱\n2️⃣. WebSites. 🌐\n3️⃣. Photography. 📸\n4️⃣. Content Marketing. ✍️\n5️⃣. Media Strategy. 📈\n6️⃣. Digital Marketing. 💻\n7️⃣. Paid Social Media. 📊\n8️⃣. Ecommerce Strategy. 🛒\n9️⃣. Display Media Planning. 📺\n0️⃣. Talk to an Agent. 🗣️",
-    "schedule": "Perfect! 😊 \n\\n Select the day and time that suits you best using the following link. We'll meet and provide a free diagnosis of your business to identify improvement strategies for your assets and marketing.",
+    "schedule": "Perfect! 😊 \n\n Select the day and time that suits you best using the following link. We'll meet and provide a free diagnosis of your business to identify improvement strategies for your assets and marketing.",
     "calendar": "👉 [Click here to schedule your appointment](https://yourcalendar.com/name)",
-    "farewell": "Awesome! Marketing intelligence awaits you. See you soon, We will grow together!"
+    "wait": "Thank you for waiting. An agent will assist you shortly. 🙋‍♂️",
+    "farewell": "🚀 Awesome! Marketing intelligence awaits you. See you soon, We will grow together!"
     }
 }
 
