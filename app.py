@@ -281,8 +281,8 @@ def question1_messages(telefono_id, lang):
         no_title = "Maybe"
     
     # Definimos los IDs de los botones (estos no cambian con el idioma)
-    si_id = "btn_si1"
-    no_id = "btn_no1"
+    si_id = "btn_si2"
+    no_id = "btn_no2"
 
     message_response_for_buttons = get_message(lang, "greeting_text3")
     
@@ -299,7 +299,7 @@ def request1_messages(telefono_id, lang):
     # Saludo en el idioma elegido
     message_response = get_message(lang, "portfolio")
     send_message_and_log(telefono_id, message_response, 'text')
-
+    
     
 def request2_messages(telefono_id, lang):
     """Envía los mensajes iniciales (bienvenida, imagen, botones Si/No) después de seleccionar idioma."""
@@ -321,8 +321,8 @@ def request2_messages(telefono_id, lang):
         no_title = "Maybe"
     
     # Definimos los IDs de los botones (estos no cambian con el idioma)
-    si_id = "btn_si1"
-    no_id = "btn_no1"
+    si_id = "btn_si3"
+    no_id = "btn_no3"
 
     message_response_for_buttons = get_message(lang, "greeting_text3")
     
