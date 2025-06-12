@@ -268,7 +268,7 @@ def question1_messages(telefono_id, lang):
     send_message_and_log(telefono_id, message_response, 'text')
 
     # Imagen
-    message_response = get_message(lang, "advice1") # Quizás 'greeting_image_caption' sea más apropiado aquí
+    message_response = get_message(lang, "advice1") 
     send_message_and_log(telefono_id, message_response, 'text')
 
     #Botones pregunta1

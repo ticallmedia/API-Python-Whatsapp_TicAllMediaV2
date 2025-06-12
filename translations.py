@@ -20,16 +20,22 @@ MESSAGES = {
 
     },
     "en": {
-        "welcome_initial": "👋😊Hello! Welcome to TicAll Media.",
-        "lang_prompt": "Please choose your language: 👆 \n",
-        "selected_language": "👌Language set to English.",
-        "invalid_option": "Invalid option. Please select.",
-        "default_response": "How can I help you?",
-        "change_language": "Sure, which language would you like to change to?",
-        "greeting_text1": "Greetings! 🤖 Intrigued by a smarter marketing strategy?",
-        "greeting_text2": "At TicAll Media, we have ideas that might surprise you. Are you ready to explore? ",
-        "job": "💼 What industry do you work in?", 
-        "advice": "🧐You are looking for advice on a special service? "
+        "welcome_initial": "👋😊!Hi there! Welcome to TicAll Media.",
+    "lang_prompt": "Please choose your language: 👆 \n",
+    "selected_language": "👌!Language set to English!",
+    "invalid_option": "Invalid option. Please select from the available choices. ",
+    "default_response": "How can I help you?",
+    "change_language": "Sure, what language would you like to switch to? ",
+    "greeting_text1": "Greetings! 🤖 Intrigued by a smarter marketing strategy?",
+    "greeting_text2": "At TicAll Media, we have ideas that might surprise you.\n\nReady to explore?",
+    "greeting_text3": "----review alternative text ----",
+    "job": "💼 What industry are you in?",
+    "advice1": "We have experience in this market. Would you like to schedule an appointment with TicAll Media? 🗓️",
+    "advice2": "🧐 Looking for advice on a special service?",
+    "portfolio": "🚀 Hi, are you looking for advice on a special service?\n\n📌 Please enter a number #️⃣ to receive information.\n\n1️⃣. DDA And Mobile Campaigns. 📱\n2️⃣. WebSites. 🌐\n3️⃣. Photography. 📸\n4️⃣. Content Marketing. ✍️\n5️⃣. Media Strategy. 📈\n6️⃣. Digital Marketing. 💻\n7️⃣. Paid Social Media. 📊\n8️⃣. Ecommerce Strategy. 🛒\n9️⃣. Display Media Planning. 📺\n0️⃣. Talk to an Agent. 🗣️",
+    "schedule": "Perfect! 😊 \n\\n Select the day and time that suits you best using the following link. We'll meet and provide a free diagnosis of your business to identify improvement strategies for your assets and marketing.",
+    "calendar": "👉 [Click here to schedule your appointment](https://yourcalendar.com/name)",
+    "farewell": "Awesome! Marketing intelligence awaits you. See you soon, We will grow together!"
     }
 }
 
