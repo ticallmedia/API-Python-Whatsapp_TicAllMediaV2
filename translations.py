@@ -8,8 +8,16 @@ MESSAGES = {
         "change_language": "Claro, ¿a que Idioma te gustaría cambiar?. ", 
         "greeting_text1": "¡Saludos! 🤖 ¿Intrigado por una estrategia de marketing más inteligente?",
         "greeting_text2": "En TicAll Media, tenemos ideas que podrían sorprenderte.\n\n¿Te animas a explorar?",
+        "greeting_text3": "----revisar texto alternativo ----",
         "job": "💼 ¿En que industria te desempeñas?", 
-        "advice": "🧐¿Buscas asesoría sobre algún servicio especial? "
+        "advice1": "Tenemos experiencia en este mercado, ¿te gustaría agendar una cita con TicAll Media? 🗓️",
+        "advice2": "🧐¿Buscas asesoría sobre algún servicio especial? ",
+        "portfolio": "🚀 Hola, ¿buscas asesoría sobre algún servicio especial?\n\n📌 Por favor, ingresa un número #️⃣ para recibir información.\n\n1️⃣. DDA And Mobile Campaigns. 📱\n2️⃣. WebSites. 🌐\n3️⃣. Photography. 📸\n4️⃣. Content Marketing. ✍️\n5️⃣. Media Strategy. 📈\n6️⃣. Digital Marketing. 💻\n7️⃣. Paid Social Media. 📊\n8️⃣. Ecommerce Strategy. 🛒\n9️⃣. Display Media Planning. 📺\n0️⃣. Hablar con un Agente. 🗣️",
+        "schedule": "¡Perfecto! 😊 \n\\n Selecciona el día y la hora que más te convenga en el siguiente enlace. Nos reuniremos y haremos un diagnóstico gratuito de tu negocio para identificar estrategias de mejora en tus activos y en tu marketing.",
+        "calendar": "👉 [Haz clic aquí para agendar tu cita](https://tucalendario.com/nombre)",
+        "farewell": "¡Estupendo! La inteligencia en marketing te espera. Te veremos pronto, We will grow together!"
+
+
     },
     "en": {
         "welcome_initial": "👋😊Hello! Welcome to TicAll Media.",

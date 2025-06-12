@@ -214,10 +214,13 @@ def procesar_y_responder_mensaje(telefono_id, mensaje_recibido):
         send_initial_messages(telefono_id, user_language)
     elif mensaje_procesado == "btn_si1":
         user_language = "es"
-        enviar_respuesta_interactiva(telefono_id, mensaje_procesado, user_language)
+        question1_messages(telefono_id, user_language)
     elif mensaje_procesado == "btn_no1":
         user_language = "es"
-        enviar_respuesta_interactiva(telefono_id, mensaje_procesado, user_language)
+        request1_messages(telefono_id, user_language)
+    elif mensaje_procesado in map(str, range(0, 10)):
+        user_language = "es"
+        request2_messages(telefono_id, user_language)
     else: # Si no tiene idioma, pedirle que lo seleccione
         user_language = "es"
         send_initial_messages(telefono_id, user_language)
@@ -256,6 +259,58 @@ def send_initial_messages(telefono_id, lang):
         button_titles=[si_title, no_title], # Pasamos los títulos que varían por idioma
         button_ids=[si_id, no_id]           # Pasamos los IDs fijos
     )
+
+
+def question1_messages(telefono_id, lang):
+    """Envía los mensajes iniciales (bienvenida, imagen, botones Si/No) después de seleccionar idioma."""
+    # Saludo en el idioma elegido
+    message_response = get_message(lang, "job")
+    send_message_and_log(telefono_id, message_response, 'text')
+
+    # Imagen
+    message_response = get_message(lang, "advice1") # Quizás 'greeting_image_caption' sea más apropiado aquí
+    send_message_and_log(telefono_id, message_response, 'text')
+
+    #Botones pregunta1
+    # Definimos los títulos de los botones según el idioma
+    if lang == "es":
+        si_title = "Si"
+        no_title = "Tal vez"
+    else:
+        si_title = "Yes"
+        no_title = "Maybe"
+    
+    # Definimos los IDs de los botones (estos no cambian con el idioma)
+    si_id = "btn_si1"
+    no_id = "btn_no1"
+
+    message_response_for_buttons = get_message(lang, "greeting_text3")
+    
+    send_message_and_log(
+        telefono_id, 
+        message_response_for_buttons, 
+        'button', 
+        button_titles=[si_title, no_title], # Pasamos los títulos que varían por idioma
+        button_ids=[si_id, no_id]           # Pasamos los IDs fijos
+    )
+
+def request1_messages(telefono_id, lang):
+    """Envía los mensajes iniciales (bienvenida, imagen, botones Si/No) después de seleccionar idioma."""
+    # Saludo en el idioma elegido
+    message_response = get_message(lang, "portfolio")
+    send_message_and_log(telefono_id, message_response, 'text')
+
+    
+def request2_messages(telefono_id, lang):
+    """Envía los mensajes iniciales (bienvenida, imagen, botones Si/No) después de seleccionar idioma."""
+    # Saludo en el idioma elegido
+    message_response = get_message(lang, "schedule")
+    send_message_and_log(telefono_id, message_response, 'text')
+
+    # Imagen
+    message_response = get_message(lang, "calendar") # Quizás 'greeting_image_caption' sea más apropiado aquí
+    send_message_and_log(telefono_id, message_response, 'text')
+
 
 def enviar_respuesta_interactiva(telefono_id, mensaje_procesado, user_language):
 
